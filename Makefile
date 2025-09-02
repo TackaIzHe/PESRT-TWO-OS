@@ -1,4 +1,5 @@
 all:
+	mkdir bin -p
 	nasm src/start.asm -f bin -o bin/start.bin
 	nasm src/print.asm -f bin -o bin/print.bin
 	
