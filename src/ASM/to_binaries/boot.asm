@@ -15,7 +15,7 @@ mov bx, KERNEL_LOCATION
 mov dh, 2
 
 mov ah, 0x02
-mov al, dh 
+mov al, 0x02 
 mov ch, 0x00
 mov dh, 0x00
 mov cl, 0x02
@@ -23,9 +23,11 @@ mov dl, [BOOT_DISK]
 int 0x13                ; no error management, do your homework!
 
                                     
-mov ah, 0x0
-mov al, 0x3
-int 0x10                ; text mode
+mov ah, 0x02  ; Установить позицию курсора
+mov bh, 0x00  ; Страница (обычно 0)
+mov dh, 0x00  ; Строка
+mov dl, 0x00  ; Столбец
+int 0x10               ; text mode
 
 mov ah, 0x1
 mov ch, 0x5f
@@ -84,7 +86,6 @@ start_protected_mode:
 	
 	mov ebp, 0x90000		; 32 bit stack base pointer
 	mov esp, ebp
-
     jmp KERNEL_LOCATION
 
                                      
