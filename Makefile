@@ -1,6 +1,8 @@
 KERNEL_NAME      := full_kernel.bin
 OS_NAME          := PESRT-TWO-OS.bin
 
+QEMU_FLAGS       := -serial stdio -d in_asm,cpu,int,guest_errors,unimp -no-reboot -no-shutdown
+
 SOURCE_DIR       := src
 ASM_DIR          := ASM
 ASM_DIR_B        := to_binaries
@@ -15,10 +17,14 @@ GASM             := as
 LINKER           := ld
 
 ASM_BINS         := boot.bin zeroes.bin
-ASM_FILES        := kernel_entry.o keybord.o
+ASM_FILES        := kernel_entry.o
+
+KERNEL_CO_FLAG   := --static -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector
 
 KERNEL_ASM_FILES := kernel.s
-KERNEL_FILES     := kernel.o
+KERNEL_INT       := keybord.o timer.o null.o
+KERNEL_IDT       := idt.o pic.o io.o
+KERNEL_FILES     := kernel.o second_kernel.o string.o stdio.o ${KERNEL_INT} ${KERNEL_IDT} 
 
 all:
 	@echo -e '\033[0;93m !!! Create dirs \033[0m'
@@ -43,11 +49,20 @@ ASM:  ${ASM_BINS} ${ASM_FILES}
 KERNEL: ${KERNEL_ASM_FILES} ${KERNEL_FILES}
 	@echo -e '\033[0;93m !!! Kernel ready !!! \033[0m'
 
-%.s: ${SOURCE_DIR}/${KERNEL_DIR}/%.c
-	${CC} --static -c $^ -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector -S -o ${OBJ_DIR}/${KERNEL_ASM_DIR}/$@
+%.s: ${SOURCE_DIR}/${KERNEL_DIR}/first_kernel/%.c
+	${CC} ${KERNEL_CO_FLAG} -c $^ -S -o ${OBJ_DIR}/${KERNEL_ASM_DIR}/$@
 
 %.o: ${OBJ_DIR}/${KERNEL_ASM_DIR}/%.s
 	${GASM} --march=i386 --32 --elf-stt-common=yes $^ -o ${OBJ_DIR}/$@
+
+%.o: ${SOURCE_DIR}/${KERNEL_DIR}/%.c
+	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@
+
+%.o: ${SOURCE_DIR}/${KERNEL_DIR}/interapts/%.c
+	${CC} ${KERNEL_CO_FLAG} -c $^  -o ${OBJ_DIR}/$@
+
+%.o: ${SOURCE_DIR}/${KERNEL_DIR}/idt/%.c
+	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@
 
 LINK:
 	cd ${OBJ_DIR} && \

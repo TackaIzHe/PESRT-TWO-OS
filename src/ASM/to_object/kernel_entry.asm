@@ -1,17 +1,5 @@
 section .text
     [bits 32]
-    [extern main]
-    call main
+    [extern start_kernel]
+    call start_kernel
     jmp $
-
-; global getTackt 
-
-; getTackt:
-;     push ds
-;     push es
-    
-;     rdtsc
-
-;     pop es
-;     pop ds
-;     ret

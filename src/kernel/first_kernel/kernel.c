@@ -1,4 +1,6 @@
 #include "kernel.h"
+#include "../idt/idt.h"
+#include "../stdio.h"
 
 char *videoMem = START_VIDEO_MEM;
 // long long int second;
@@ -22,7 +24,8 @@ void printf(char* mess, int color ){
     }
     int i = 0;
     char *j = videoMem;
-    while( mess[i] != 0 )
+    *j = *(mess+3);
+    while( *(mess+i) != 0 )
     {
         *j = mess[i];
         j += 1;
@@ -62,17 +65,15 @@ void printf(char* mess, int color ){
 
 void init()
 {
-    videoMem = START_VIDEO_MEM;
-    // second = 999999999999999999;
-    // keybord_init();
-
+    keybord_state = 0;
 }
 
-
-int main(){
-    init();
-
-    char qwe[10] = "asd";
-    printf(qwe,0);
+int start_kernel(void){
+    
+    init_idt();
+    init_pic();
+    enable_irq();
+    
+    main();
     return 0;
 }

@@ -1,0 +1,8 @@
+#ifndef __STRING_H__
+#define __STRING_H__
+
+void memset(char* dest, char data, int size);
+int  strlen(const char* str);
+int  strcmp(const char* str1, const char* str2);
+
+#endif
