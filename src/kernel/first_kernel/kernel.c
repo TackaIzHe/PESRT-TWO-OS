@@ -69,9 +69,9 @@ void init()
 }
 
 int start_kernel(void){
-    
-    init_idt();
+    __asm__ __volatile__ ("cli");
     init_pic();
+    init_idt();
     enable_irq();
     
     main();
