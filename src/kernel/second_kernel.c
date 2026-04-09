@@ -43,7 +43,7 @@ __asm__ __volatile__ ("sti");
     //         break;
     // }
     while(1){
-        // __asm__ __volatile__ ("hlt");
+        __asm__ __volatile__ ("hlt");
     }
 
     // __asm__ __volatile__ ("cli");

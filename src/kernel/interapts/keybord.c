@@ -6,7 +6,7 @@ void keybord_interapt(void){
     __asm__ __volatile__("inb $0x64, %%al" : "=a" (keybord_state));
     
     outb(0x20, 0x20);
-    outb(0xA0, 0x11);
+    // outb(0xA0, 0x11);
     // keybord_state = 1;
     return;
 }
