@@ -1,27 +1,17 @@
 #include "../uint.h"
 #include "../stdio.h"
 #include "../idt/io.h"
+#include "../idt/pic.h"
 
-void keybord_interapt(void){
-    __asm__ __volatile__("inb $0x64, %%al" : "=a" (keybord_state));
-    
-    outb(0x20, 0x20);
-    // outb(0xA0, 0x11);
-    // keybord_state = 1;
+__attribute__((naked)) void keybord_interapt(void){
+    uint8_t c = 0;
+    __asm__ __volatile__("inb $0x60, %%al" : "=a" (c));
+
+    uint16_t* vm = (uint16_t*)0xb8000;
+    uint8_t *sumb = (uint8_t*)vm;
+    sumb[2] = c;
+
+    *(volatile uint32_t *)LAPIC_TIMER_EOI = 0;
+    __asm__ __volatile__ ("iret");
     return;
 }
-
-
-
-// Читаем статус клавиатуры (порт 0x64)
-// "wait_for_keyboard:\n"
-// "testb $0x00, %%al\n"  // Проверяем бит 0 (Output Buffer Full)
-// "jz wait_for_keyboard\n" // Если не готов, ждем дальше
-// "inb $0x60, %%al\n"    // Читаем скан-код (теперь безопасно)
-// "movb %%al, %0\n"      // Сохраняем в scancode
-// "outb %%al, $0xE9\n"   // Отправляем в Bochs debug порт
-// "movb $0x20, %%al\n"   // Готовим EOI
-// "outb %%al, $0x20\n"   // Отправляем EOI в PIC1
-// : "=r" (scancode)      // Выход
-// :                      // Вход
-// : "al"                 // Клоубераем AL

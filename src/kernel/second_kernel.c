@@ -13,7 +13,7 @@ __asm__ __volatile__ ("sti");
 // __asm__ __volatile__ ("int $0x20");
 // __asm__ __volatile__ ("int $0x20");
 // __asm__ __volatile__ ("int $0x20");
-// __asm__ __volatile__ ("int $0x20");
+
     // // while(1)
     // // {
     //     //     // *(vm + 2) = ':';
@@ -43,6 +43,7 @@ __asm__ __volatile__ ("sti");
     //         break;
     // }
     while(1){
+        __asm__ __volatile__ ("int $0x21");
         __asm__ __volatile__ ("hlt");
     }
 

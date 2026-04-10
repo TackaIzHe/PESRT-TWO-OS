@@ -1,5 +1,6 @@
 #include "../idt/io.h"
 #include "../stdio.h"
+#include "../idt/pic.h"
 
 // static inline uint8_t cq = '1';
 
@@ -10,6 +11,6 @@ __attribute__((naked)) void timer_interapt(void)
     uint8_t *sumb = (uint8_t*)vm;
     sumb[1] = sumb[1] + 1;  // Меняем цвет символа в верхнем левом углу
 
-    *(volatile uint32_t *)0xFEE000B0 = 0;
+    *(volatile uint32_t *)LAPIC_TIMER_EOI = 0;
     __asm__ __volatile__ ("iret");
 }
