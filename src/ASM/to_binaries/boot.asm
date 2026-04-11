@@ -1,6 +1,5 @@
 [org 0x7c00]                        
 KERNEL_LOCATION equ 0x1000
-                                    
 
 mov [BOOT_DISK], dl                 
 
@@ -20,7 +19,7 @@ mov ch, 0x00
 mov dh, 0x00
 mov cl, 0x02
 mov dl, [BOOT_DISK]
-int 0x13                ; no error management, do your homework!
+int 0x13                ; no error management
 
                                     
 mov ah, 0x02  ; Установить позицию курсора

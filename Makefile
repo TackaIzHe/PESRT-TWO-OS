@@ -21,10 +21,11 @@ ASM_FILES        := kernel_entry.o
 
 KERNEL_CO_FLAG   := --static -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector
 
-KERNEL_ASM_FILES := kernel.s
+KERNEL_ASM_FILES := kernel.o
 KERNEL_INT       := keybord.o timer.o null.o
-KERNEL_IDT       := idt.o pic.o io.o
-KERNEL_FILES     := kernel.o second_kernel.o string.o stdio.o ${KERNEL_INT} ${KERNEL_IDT} 
+KERNEL_IDT       := pic.o idt.o io.o
+KERNEL_GDT       := gdt.o tss.o
+KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} kernel.o string.o second_kernel.o stdio.o ${KERNEL_INT}
 
 all:
 	@echo -e '\033[0;93m !!! Create dirs \033[0m'
@@ -49,8 +50,8 @@ ASM:  ${ASM_BINS} ${ASM_FILES}
 KERNEL: ${KERNEL_ASM_FILES} ${KERNEL_FILES}
 	@echo -e '\033[0;93m !!! Kernel ready !!! \033[0m'
 
-%.s: ${SOURCE_DIR}/${KERNEL_DIR}/first_kernel/%.c
-	${CC} ${KERNEL_CO_FLAG} -c $^ -S -o ${OBJ_DIR}/${KERNEL_ASM_DIR}/$@
+%.o: ${SOURCE_DIR}/${KERNEL_DIR}/first_kernel/%.c
+	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@
 
 %.o: ${OBJ_DIR}/${KERNEL_ASM_DIR}/%.s
 	${GASM} --march=i386 --32 --elf-stt-common=yes $^ -o ${OBJ_DIR}/$@
@@ -66,12 +67,12 @@ KERNEL: ${KERNEL_ASM_FILES} ${KERNEL_FILES}
 
 LINK:
 	cd ${OBJ_DIR} && \
-	${LINKER} -m elf_i386 -o ../${BIN_DIR}/${KERNEL_NAME} -Ttext 0x1000 ${ASM_FILES} ${KERNEL_FILES} --oformat binary
+	${LINKER} -m elf_i386 -T ../link.ld -o ../${BIN_DIR}/${KERNEL_NAME} ${ASM_FILES} ${KERNEL_FILES} --oformat binary
 	cd ${BIN_DIR} && \
 	cat *.bin > ${OS_NAME}
 
 START_QEMU:
-	qemu-system-x86_64 -drive format=raw,file=${BIN_DIR}/${OS_NAME},index=0,if=floppy,  -m 128M
+	qemu-system-x86_64 -drive format=raw,file=${BIN_DIR}/${OS_NAME},index=0,if=floppy -m 128M #-d int -d cpu -no-reboot
 
 mkdir:
 	@echo -e '\033[0;93m !!! Make directory !!! \033[0m'

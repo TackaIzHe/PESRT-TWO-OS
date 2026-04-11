@@ -21,21 +21,30 @@ static inline void lapic_keybord_init(void) {
 // /* разрешить pin 0, вектор 0x20, CPU 0 */
 static inline void lapic_init(void) {
     lapic_timer_init();
-    lapic_keybord_init();
+    // lapic_keybord_init();
 }
 // Инициализация PIC
 void init_pic(void) {
     /* Полный выключатель 8259 */
+    // outb(0x20, 0x20);
     outb(0x21, 0xFF);   // mask master
     outb(0xA1, 0xFF);   // mask slave
     outb(0x20, 0x11);   // ICW1 (init)
-    outb(0xA0, 0x11);
-    outb(0x21, 0x20);   // ICW2
-    outb(0xA1, 0x28);
-    outb(0x21, 0x04);   // ICW3
-    outb(0xA1, 0x02);
-    outb(0x21, 0x01);   // ICW4
-    outb(0xA1, 0x01);
+    // outb(0xA0, 0x11);
+    // io_wait();
+    // // io_wait();
+    // outb(0x21, 0x20);   // ICW2
+    // // io_wait();
+    // outb(0xA1, 0x28);
+    // // io_wait();
+    // outb(0x21, 0x04);   // ICW3
+    // // io_wait();
+    // outb(0xA1, 0x02);
+    // // io_wait();
+    // outb(0x21, 0x01);   // ICW4
+    // // io_wait();
+    // outb(0xA1, 0x01);
+    // io_wait();
 }
 
 // Разрешаем IRQ0 (таймер) и IRQ1 (клавиатура)

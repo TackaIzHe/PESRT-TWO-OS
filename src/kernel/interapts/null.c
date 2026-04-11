@@ -1,8 +1,8 @@
 #include "../idt/io.h"
+#include "../idt/pic.h"
 
-void null_interapt(void)
+__attribute__((naked)) void null_interapt(void)
 {
-    outb(0x20, 0x20);
-    // outb(0xA0, 0x20);
-    return;
+    *(volatile uint32_t *)LAPIC_TIMER_EOI = 0;
+    __asm__ __volatile__ ("iret");
 }
