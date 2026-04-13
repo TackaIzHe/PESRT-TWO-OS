@@ -1,6 +1,7 @@
 #ifndef __PIC_H__
 #define __PIC_H__
 
+void pic_set_mask(void);
 /**
  * SVR (0xFEE000F0) bit8 = Enable
  * *((uint32_t*)APIC_TIMER_BASE + TIMER_VECTOR) |= 1<<8;

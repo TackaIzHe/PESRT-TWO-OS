@@ -35,14 +35,15 @@ void gdt_install(void)
     gdt_ptr.base = (uint32_t)gdt;
 
     /* 4. загрузить */
-    asm volatile("lgdt (%0)" :: "m"(gdt_ptr));
+    __asm__ __volatile__ ("lgdt %0" :: "m"(gdt_ptr));
     
     /* 5. перезагрузить сегменты  (far jmp ниже) */
 }
 
 void reload_segments(void)
 {
-    asm volatile(
+    int a = 0;
+    __asm__ __volatile__(
         "ljmp $0x08, $1f\n"   /* far jump на селектор 0x08 (kcode) */
         "1:\n"
         "mov  $0x10, %%ax\n"  /* kdata */
@@ -68,6 +69,6 @@ void tss_flush(void)
     // asm volatile("lgdt (%0)" :: "r"(&gdt_ptr));
 
     /* загрузить Task Register */
-    asm volatile("lgdt (%0)" :: "r"(&gdt_ptr));
-    asm volatile("ltr %%ax" :: "a"(0x28));
+    __asm__ __volatile__("lgdt (%0)" :: "r"(&gdt_ptr));
+    __asm__ __volatile__("ltr %%ax" :: "a"(0x28));
 }

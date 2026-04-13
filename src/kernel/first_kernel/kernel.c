@@ -2,7 +2,8 @@
 #include "../idt/idt.h"
 #include "../idt/gdt.h"
 #include "../idt/tss.h"
-#include "../stdio.h"
+#include "../uint.h"
+// #include "../stdio.h"
 
 char *videoMem = START_VIDEO_MEM;
 
@@ -34,16 +35,14 @@ int start_kernel(void){
     __asm__ __volatile__ ("cli");
     gdt_install();     /* строим таблицу */
     reload_segments(); /* сегменты теперь 32-битные */
-        
+    
     init_tss();        /* заполняем TSS */
     tss_flush();       /* добавляем TSS-дескриптор и ltr */
-    init_idt();
     init_pic();
-    while(1){}
-    // enable_irq();
+    init_idt();
+    // // qweinit123();
+    enable_irq();
     __asm__ __volatile__ ("sti");
-    
-
     main();
     return 0;
 }
