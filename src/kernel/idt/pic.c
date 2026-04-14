@@ -12,11 +12,11 @@ static inline void lapic_timer_init(void) {
 }
 // Инит клавиатуры
 static inline void lapic_keybord_init(void) {
-    *(uint32_t*)IO_APIC_KEYBORD_BASE = 0x12;
-    *((uint32_t*)IO_APIC_KEYBORD_BASE + 4) = KEYBORD_VECTOR | 0x00010000;
+    *(uint32_t*)LAPIC_KEYBORD_BASE = 0x12;
+    *((uint32_t*)LAPIC_KEYBORD_BASE + 4) = KEYBORD_VECTOR | 0x00010000;
 
-    *(uint32_t*)IO_APIC_KEYBORD_BASE = 0x13;
-    *((uint32_t*)IO_APIC_KEYBORD_BASE + 4) = 0;
+    *(uint32_t*)LAPIC_KEYBORD_BASE = 0x13;
+    *((uint32_t*)LAPIC_KEYBORD_BASE + 4) = 0;
 }
 // /* разрешить pin 0, вектор 0x20, CPU 0 */
 static inline void lapic_init(void) {
@@ -36,7 +36,6 @@ void init_pic(void) {
     outb(0xA1, 0x02);
     outb(0x21, 0x01);   // ICW4
     outb(0xA1, 0x01);
-    // pic_set_mask();
 }
 
 // Разрешаем IRQ0 (таймер) и IRQ1 (клавиатура)

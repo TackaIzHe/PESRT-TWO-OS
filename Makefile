@@ -16,8 +16,8 @@ CC               := i386-elf-gcc
 GASM             := as
 LINKER           := i386-elf-ld
 
-ASM_BINS         := boot.bin zeroes.bin
-ASM_FILES        := kernel_entry.o pic_mask_set.o
+ASM_BINS         := boot.bin
+ASM_FILES        := kernel_entry.o
 
 KERNEL_CO_FLAG   ?= --static -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector
 
@@ -58,9 +58,6 @@ KERNEL: ${KERNEL_ASM_FILES} ${KERNEL_FILES}
 
 %.o: ${SOURCE_DIR}/${KERNEL_DIR}/first_kernel/%.c
 	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@
-
-# %.o: ${OBJ_DIR}/${KERNEL_ASM_DIR}/%.s
-# 	${GASM} --32 $^ -o ${OBJ_DIR}/$@
 
 %.o: ${SOURCE_DIR}/${KERNEL_DIR}/%.c
 	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@

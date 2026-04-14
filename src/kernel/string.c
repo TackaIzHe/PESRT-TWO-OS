@@ -1,13 +1,11 @@
 
-void memset(char* dest, char data, int size)
-{
+void memset(char* dest, char data, int size) {
     for (int i = 0; i < size; i++)
         dest[i] = data;
     return;
 }
 
-int strlen(const char* str)
-{
+int strlen(const char* str) {
     int i = 0;
     while (*str != '\0')
         i++;
@@ -15,8 +13,7 @@ int strlen(const char* str)
     return i;
 }
 
-int strcmp(const char* str1, const char* str2)
-{
+int strcmp(const char* str1, const char* str2) {
     int res = -1;
     if (strlen(str1) != strlen(str2))
         goto _exit;

@@ -2,8 +2,8 @@
 #include "../interapts/interapt.h"
 #include "../string.h"
 
-IDTEntry idt[IDT_LENGHT];
-IDTptr idtr;
+static IDTEntry idt[IDT_LENGHT];
+static IDTptr idtr;
 
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
     idt[num].offset_low = base & 0xFFFF;
@@ -19,7 +19,7 @@ void init_idt(void) {
     memset((char*)&idt, 0, sizeof(IDTEntry) * IDT_LENGHT);
     
     for (int i = 0; i < IDT_LENGHT; i++)
-    idt_set_gate(i, (uint32_t)null_interapt, 0x08, 0x8E);
+        idt_set_gate(i, (uint32_t)null_interapt, 0x08, 0x8E);
     
     idt_set_gate(0x20, (uint32_t)timer_interapt,
     0x08, 0x8E);  // 0x60 - DPL=3 (разрешить из кольца 3)

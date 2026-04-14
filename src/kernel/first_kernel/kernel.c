@@ -2,8 +2,9 @@
 #include "../idt/idt.h"
 #include "../idt/gdt.h"
 #include "../idt/tss.h"
+#include "../idt/pic.h"
 #include "../uint.h"
-// #include "../stdio.h"
+#include "../stdio.h"
 
 char *videoMem = START_VIDEO_MEM;
 
@@ -40,7 +41,6 @@ int start_kernel(void){
     tss_flush();       /* добавляем TSS-дескриптор и ltr */
     init_pic();
     init_idt();
-    // // qweinit123();
     enable_irq();
     __asm__ __volatile__ ("sti");
     main();

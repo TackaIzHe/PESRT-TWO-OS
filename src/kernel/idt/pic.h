@@ -1,7 +1,8 @@
 #ifndef __PIC_H__
 #define __PIC_H__
 
-void pic_set_mask(void);
+void init_pic(void);
+void enable_irq(void);
 /**
  * SVR (0xFEE000F0) bit8 = Enable
  * *((uint32_t*)APIC_TIMER_BASE + TIMER_VECTOR) |= 1<<8;
@@ -22,14 +23,13 @@ void pic_set_mask(void);
  * *(uint32_t*)APIC_TIMER_TDCR   = 0x3;
  */
 #define LAPIC_TIMER_TDCR   0xFEE003E0
-#define LAPIC_TIMER_EOI    0xFEE000B0
+#define LAPIC_EOI    0xFEE000B0
 
 #define TIMER_PERIODIC_FLAG (1 << 17)
 #define TIMER_VECTOR 0x20
 
-#define IO_APIC_KEYBORD_BASE 0xFEC00000
+#define LAPIC_KEYBORD_BASE 0xFEC00000
 
-// #define IO_APIC_KEYBORD_EOI 0xFEC000B0
 #define KEYBORD_VECTOR 0x21
 
 #endif

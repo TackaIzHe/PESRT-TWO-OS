@@ -9,9 +9,6 @@
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
 void init_idt(void);
 
-// inline int qweinit123(void);
-void init_pic();
-void enable_irq();
 enum {
     INT_I = 0,
     INT_O
@@ -30,5 +27,4 @@ typedef struct {
         uint32_t base;
 } __attribute__((packed)) IDTptr;
 
-extern IDTEntry idt[IDT_LENGHT];
 #endif
