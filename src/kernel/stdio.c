@@ -1,11 +1,13 @@
 #include "uint.h"
 #include "stdio.h"
 #include "interapts/interapt.h"
+#include "string.h"
 
 uint8_t press_key = 0;
-uint16_t cursor_pos = 0;
+uint16_t* cursor_pos = 0;
 uint8_t cursor_offset = 0;
-uint8_t user_line[255] = "<PESRT-TWO-OS>[User name] /";
+uint8_t terminal_tem = ((BLACK << 4) | WHITE);
+uint8_t user_line[255] = "<PESRT-TWO-OS>[_] /";
 
 static inline uint8_t sumbole_down_convert(uint8_t sumb);
 static inline uint8_t sumbole_up_convert(uint8_t sumb);
@@ -27,12 +29,64 @@ void scan_key(void) {
 
 void clear_screen(uint32_t x, uint32_t y) {
     uint16_t *start = (uint16_t*)START_VIDEO_MEM;
-    for (int i = 0; i < y * x; i++)
-        *(start + i) = (((BLACK << 4) | WHITE) << 8) | 0;
+    for (uint32_t i = 0; i < y * x; i++)
+        *(start + i) = (terminal_tem << 8) | 0;
+}
+void init_cursor_pos(void) {
+    cursor_pos = (uint16_t *)START_VIDEO_MEM;
 }
 
-void printf(uint8_t *str, void *arg) {
+void set_terminal_tem(uint8_t background, uint8_t text_color) {
+    terminal_tem = ((background << 4) | text_color);
+}
 
+void printf(const uint8_t *str, const uint32_t *arg) {
+    uint8_t buffer[1024];
+    sprintf(buffer, str, arg);
+    uint32_t len = strlen(buffer);
+    for (uint32_t i = 0; i < len; i++) {
+        *cursor_pos = (terminal_tem << 8) | buffer[i];
+        cursor_pos++;
+    }
+}
+
+void sprintf(uint8_t *dest, const uint8_t *str, const uint32_t *arg) {
+    uint8_t buffer[1024];
+    uint32_t cur_arg = 0;
+    strcpy(buffer, str);
+    uint32_t len = strlen(buffer);
+    for (uint32_t i = 0; i < len; i++) {
+        if (buffer[i] == '%') {
+            switch (buffer[i+1]) {
+                case 'c': {
+                    buffer[i] = arg[cur_arg];
+                    cur_arg++;
+                    i++;
+                    for (int j = i; j < len; j++) {
+                        buffer[j] = buffer[j + 1];
+                    }
+                    len--;
+                    continue;
+                    break;
+                }
+                case 'd': {
+                    uint8_t int_str[15];
+                    uint8_t rigth_half[1024];
+                    convert_int_to_string(arg[cur_arg], int_str);
+                    strcpy(rigth_half, buffer + i);
+                    strcpy(buffer + i, int_str);
+                    uint32_t new_len = strlen(int_str) + i;
+                    strcmp(buffer + new_len, rigth_half);
+                    break;
+                }
+                case 's': {
+                    break;
+                }
+            }
+        }
+    }
+    len = strlen(buffer);
+    strcpy(dest, buffer);
 }
 
 void scanf(uint8_t *buff) {
@@ -40,7 +94,21 @@ void scanf(uint8_t *buff) {
 }
 
 void convert_int_to_string(uint32_t num, uint8_t *buff) {
-
+    uint32_t ostatok = num;
+    uint32_t i = 0;
+    uint32_t len = 0;
+    while (ostatok > 0) {
+        ostatok = ostatok / 10;
+        i++;        
+    }
+    ostatok = num;
+    len = i;
+    while (i > 0) {
+        buff[i - 1] = ZERO_CHAR + (ostatok % 10);
+        ostatok = ostatok / 10;
+        i--;
+    }
+    buff[len] = '\0';
 }
 
 uint32_t convert_string_to_int(uint8_t *string) {

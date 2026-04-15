@@ -6,6 +6,18 @@
 void scan_key(void);
 void clear_screen(uint32_t x, uint32_t y);
 
+/**
+ * %d Вывод числа
+ * %c Вывод символа
+ * %s Вывод строки
+ * \n Перенос на новую строку
+ */
+void printf(const uint8_t *str, const uint32_t *arg);
+void sprintf(uint8_t *dest, const uint8_t *str, const uint32_t *arg);
+void init_cursor_pos(void);
+void set_terminal_tem(uint8_t background, uint8_t text_color);
+void convert_int_to_string(uint32_t num, uint8_t *buff);
+
 #define TEXT_MOD_X   80
 #define TEXT_MOD_Y   25
 

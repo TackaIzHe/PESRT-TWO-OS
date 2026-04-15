@@ -8,22 +8,22 @@
 
 char *videoMem = START_VIDEO_MEM;
 
-void printf(char* mess, int color ){
-    if(color == 0){
-        color = 0x0f;
-    }
-    int i = 0;
-    char *j = videoMem;
-    *j = *(mess+3);
-    while( *(mess+i) != 0 )
-    {
-        *j = mess[i];
-        j += 1;
-        *j = color;
-        j += 1;
-        i++;   
-    }
-}
+// void printf(char* mess, int color ){
+//     if(color == 0){
+//         color = 0x0f;
+//     }
+//     int i = 0;
+//     char *j = videoMem;
+//     *j = *(mess+3);
+//     while( *(mess+i) != 0 )
+//     {
+//         *j = mess[i];
+//         j += 1;
+//         *j = color;
+//         j += 1;
+//         i++;   
+//     }
+// }
 
 void init() {
     // press_key = 48;

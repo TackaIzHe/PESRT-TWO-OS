@@ -1,19 +1,32 @@
+#include "uint.h"
 
-void memset(char* dest, char data, int size) {
-    for (int i = 0; i < size; i++)
+
+void memset(uint8_t* dest, uint8_t data, uint32_t size) {
+    for (uint32_t i = 0; i < size; i++)
         dest[i] = data;
     return;
 }
 
-int strlen(const char* str) {
-    int i = 0;
+uint32_t strlen(const uint8_t* str) {
+    uint32_t i = 0;
     while (*str != '\0')
+    {
+        str++;
         i++;
+    }
 
     return i;
 }
 
-int strcmp(const char* str1, const char* str2) {
+void strcpy(uint8_t *dest, const uint8_t *source) {
+    uint32_t i = 0;
+    while (source[i] != '\0') {
+        dest[i] = source[i];
+        i++;
+    }
+}
+
+int strcmp(const uint8_t* str1, const uint8_t* str2) {
     int res = -1;
     if (strlen(str1) != strlen(str2))
         goto _exit;
