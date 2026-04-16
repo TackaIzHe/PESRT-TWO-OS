@@ -9,8 +9,9 @@ void main(void)
     init_cursor_pos();
     set_terminal_tem(BLACK, GREEN);
     convert_int_to_string(25012396, asd);
-    uint32_t arg[3] = {'a', 250412, "asdqwedasd"};
-    printf("qwe %c %d %s", arg);
+    // uint32_t arg[3] = {'a', 250412, "asdqwedasd"};
+    sprintf(asd, "qwe %c %d    %s %d %s %c", 'W', 25010, "asdqw", 123, "qweasd", 'a');
+    printf(asd);
     while(1)
     {
         scan_key();

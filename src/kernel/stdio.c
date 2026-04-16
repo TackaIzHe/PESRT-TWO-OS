@@ -40,46 +40,53 @@ void set_terminal_tem(uint8_t background, uint8_t text_color) {
     terminal_tem = ((background << 4) | text_color);
 }
 
-void printf(const uint8_t *str, const uint32_t *arg) {
+void printf(const uint8_t *str, ...) {
     uint8_t buffer[1024];
-    sprintf(buffer, str, arg);
-    uint32_t len = strlen(buffer);
+    uint32_t len = strlen(str);
     for (uint32_t i = 0; i < len; i++) {
-        *cursor_pos = (terminal_tem << 8) | buffer[i];
+        *cursor_pos = (terminal_tem << 8) | str[i];
         cursor_pos++;
     }
 }
 
-void sprintf(uint8_t *dest, const uint8_t *str, const uint32_t *arg) {
+void sprintf(uint8_t *dest, const uint8_t *str, ...) {
     uint8_t buffer[1024];
-    uint32_t cur_arg = 0;
+    uint32_t cur_arg = 1;
     strcpy(buffer, str);
     uint32_t len = strlen(buffer);
     for (uint32_t i = 0; i < len; i++) {
         if (buffer[i] == '%') {
             switch (buffer[i+1]) {
                 case 'c': {
-                    buffer[i] = arg[cur_arg];
-                    cur_arg++;
+                    buffer[i] = *(uint8_t*)(&str + cur_arg);
+                    strcpy(buffer + i + 1, (buffer + i + 2));
+                    len = strlen(buffer);
                     i++;
-                    for (int j = i; j < len; j++) {
-                        buffer[j] = buffer[j + 1];
-                    }
-                    len--;
-                    continue;
+                    cur_arg++;
                     break;
                 }
                 case 'd': {
                     uint8_t int_str[15];
                     uint8_t rigth_half[1024];
-                    convert_int_to_string(arg[cur_arg], int_str);
-                    strcpy(rigth_half, buffer + i);
+                    convert_int_to_string(*((uint32_t*)(&str + cur_arg)), int_str);
+                    strcpy(rigth_half, (buffer + i + 2));
                     strcpy(buffer + i, int_str);
                     uint32_t new_len = strlen(int_str) + i;
-                    strcmp(buffer + new_len, rigth_half);
+                    strcpy(buffer + new_len, rigth_half);
+                    cur_arg++;
+                    len = strlen(buffer);
+                    i++;
                     break;
                 }
                 case 's': {
+                    uint8_t rigth_half[1024];
+                    strcpy(rigth_half, buffer + i + 2);
+                    strcpy(buffer + i, *((uint8_t**)(&str + cur_arg)));
+                    uint32_t new_len = strlen(*((uint8_t**)(&str + cur_arg))) + i;
+                    strcpy(buffer + new_len, rigth_half);
+                    cur_arg++;
+                    len = strlen(buffer);
+                    i++;
                     break;
                 }
             }

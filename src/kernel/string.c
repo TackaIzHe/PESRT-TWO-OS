@@ -24,6 +24,8 @@ void strcpy(uint8_t *dest, const uint8_t *source) {
         dest[i] = source[i];
         i++;
     }
+    if (source[i] == '\0')
+        dest[i] = '\0';
 }
 
 int strcmp(const uint8_t* str1, const uint8_t* str2) {
