@@ -60,7 +60,29 @@ __attribute__((naked)) void set_tem_terminal_interapt(uint8_t background, uint8_
 
 __attribute__((naked)) void print_char_interapt(uint8_t sumbole) {
     __asm__ __volatile__ ("pusha");
-    if (sumbole == '\n') {
+    if (sumbole == '\0')
+        goto _exit;
+
+    if (sumbole == BACKSPACE){
+        if (cursor_pos_y == 0) {
+            if (cursor_pos_x > 0) {
+                cursor_pos_x--;
+            }
+        }
+        else if (cursor_pos_y > 0) {
+            if (cursor_pos_x == 0) {
+                cursor_pos_x = TEXT_MOD_X - 1;
+                cursor_pos_y--;
+            }
+            else {
+                cursor_pos_x--;
+            }
+        }
+        vm_array[cursor_pos_y][cursor_pos_x] = (terminal_tem << 8) | 0;
+        goto _exit;
+    }
+
+    if (sumbole == ENTER) {
         cursor_pos_y++;
         cursor_pos_x = 0;
     }
@@ -72,10 +94,11 @@ __attribute__((naked)) void print_char_interapt(uint8_t sumbole) {
         cursor_pos_y = TEXT_MOD_Y - 1;
         scroll_page();
     }
-    if (sumbole != '\n') {
+    if (sumbole != ENTER) {
         vm_array[cursor_pos_y][cursor_pos_x] = (terminal_tem << 8) | sumbole;
         cursor_pos_x++;
     }
+_exit:
     __asm__ __volatile__ ("popa");
     *(volatile uint32_t *)LAPIC_EOI = 0;
     __asm__ __volatile__ ("iret");

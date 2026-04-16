@@ -3,7 +3,8 @@
 
 #include "uint.h"
 
-void scan_key(void);
+void scan(uint8_t *key);
+void scanf(uint8_t *buff);
 void init_video_mem(void);
 void clear_screen(void);
 void set_cursor_pos(uint32_t x, uint32_t y);
@@ -42,5 +43,16 @@ void convert_int_to_string(uint32_t num, uint8_t *buff);
 
 #define START_VIDEO_MEM (uint16_t *)0xb8000
 #define ZERO_CHAR 48
+
+#define KEYBOARD_STATE_DOWN 1
+#define KEYBOARD_STATE_UP   0
+/**
+ * Количество одинаковых прерываний чтобы клавиша начала повторяться
+ */
+#define KEYBOARD_MAX_COUNT  250
+
+#define ENTER        '\n'
+#define BACKSPACE    '\b'
+
 
 #endif

@@ -10,7 +10,7 @@ void main(void) {
     printf("11 HELLO WORLD !!! %s %d \n12 asdqw \n", "asdqw", 12341);
     printf("13 HELLO WORLD !!! %s %d \n14 asdqw \n", "asdqw", 12341);
     printf("15 HELLO WORLD !!! %s %d \n16 asdqw \n", "asdqw", 12341);
-    set_terminal_tem(BLUE, RED);
+    // set_terminal_tem(BLUE, RED);
     printf("17 HELLO WORLD !!! %s %d \n18 asdqw \n", "asdqw", 12341);
     printf("19 HELLO WORLD !!! %s %d \n20 asdqw \n", "asdqw", 12341);
     printf("21 HELLO WORLD !!! %s %d \n22 asdqw \n", "asdqw", 12341);
@@ -19,13 +19,15 @@ void main(void) {
     printf("27 HELLO WORLD !!! %s %d \n28 asdqw \n", "asdqw", 12341);
     printf("29 HELLO WORLD !!! %s %d \n30 asdqw \n", "asdqw", 12341);
     printf("31 123\n32asdqwe123321");
-    clear_screen();
-    set_cursor_pos(0, 5);
     printf("31 123\n32asdqwe123321");
-
+    clear_screen();
+    set_cursor_pos(0, 0);
+    
+    uint8_t buff[200];
+    scanf(buff);
+    printf("%s", buff);
     while(1)
     {
-        scan_key();
         __asm__ __volatile__ ("hlt");
     }
 

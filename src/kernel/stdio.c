@@ -2,27 +2,65 @@
 #include "stdio.h"
 #include "interapts/interapt.h"
 #include "string.h"
+#include "tty.h"
 
-uint8_t press_key = 0;
+tty_atr tty = {0};
 uint8_t cursor_offset = 0;
-uint8_t user_line[255] = "<PESRT-TWO-OS>[_] /";
+uint8_t user_line[255] = "<PESRT-TWO-OS>[%s] /";
 
 static inline uint8_t sumbole_down_convert(uint8_t sumb);
 static inline uint8_t sumbole_up_convert(uint8_t sumb);
 
-void scan_key(void) {
-    
-    while(press_key == 0) {
-        __asm__ __volatile__ ("int $0x21");
+void scanf(uint8_t *buff) {
+    uint32_t i = 0;
+    uint8_t x = 0;
+    while (x != ENTER) {
+        scan(&x);
+        if (x == '\0')
+            continue;
+        if (x == BACKSPACE)
+            if (i > 0) {
+                i--;
+                x = 0;
+                buff[i] = x;
+                print(BACKSPACE);
+                continue;
+            }
+            
+        buff[i] = x;
+        print(x);
+        i++;
+    }
+    buff[i] = '\0';
+}
+
+void scan(uint8_t *key) {
+    *key = '\0';
+    __asm__ __volatile__ ("int $0x21");
+    while (*key == '\0') {
         __asm__ __volatile__ ("hlt");
     }
-    press_key = sumbole_down_convert(press_key);
-    if (press_key != '\0'){
-        uint16_t* vm = (uint16_t*)0xb8000;
-        vm[1] = 0x0F << 8 | press_key;
+    if (*key > 128) {
+        if (tty.keyboard_state == KEYBOARD_STATE_UP && tty.last_dep_key == *key) {
+            // tty.last_dep_count++;
+            *key = '\0';
+            goto _exit;
+        }
+        tty.keyboard_state = KEYBOARD_STATE_UP;
     }
-    press_key = 0;
-
+    else {
+        if (tty.keyboard_state == KEYBOARD_STATE_DOWN && tty.last_dep_key == *key) {
+            // tty.last_dep_count++;
+            *key = '\0';
+            goto _exit;
+        }
+        tty.keyboard_state = KEYBOARD_STATE_DOWN;
+    }
+_ret_key:
+    // tty.last_dep_count = 0;
+    tty.last_dep_key = *key;
+    *key = sumbole_down_convert(*key);
+_exit:
 }
 
 void init_video_mem(void) {
@@ -139,9 +177,9 @@ void sprintf(uint8_t *dest, const uint8_t *str, ...) {
     strcpy(dest, buffer);
 }
 
-void scanf(uint8_t *buff) {
+// void scanf(uint8_t *buff) {
 
-}
+// }
 
 void convert_int_to_string(uint32_t num, uint8_t *buff) {
     uint32_t ostatok = num;
@@ -169,9 +207,9 @@ static inline uint8_t sumbole_down_convert(uint8_t sumb) {
     switch(sumb)
     {
         case 1:   return 'E'; //ESC
-        case 14:  return 'B'; // Back space \b
+        case 14:  return BACKSPACE; // Back space \b
         case 15:  return 'T'; // TAB \t
-        case 28:  return 'E'; //ENTER \n
+        case 28:  return ENTER; //ENTER \n
         case 29:  return 'C'; //CTRL
         case 42:  return 'S'; //SHIFT L
         case 54:  return 'S'; //SHIFT R
