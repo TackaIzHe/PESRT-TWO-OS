@@ -4,7 +4,10 @@
 #include "uint.h"
 
 void scan_key(void);
-void clear_screen(uint32_t x, uint32_t y);
+void init_video_mem(void);
+void clear_screen(void);
+void set_cursor_pos(uint32_t x, uint32_t y);
+void set_terminal_tem(uint8_t background, uint8_t text_color);
 
 /**
  * %d Вывод числа
@@ -13,9 +16,8 @@ void clear_screen(uint32_t x, uint32_t y);
  * \n Перенос на новую строку
  */
 void printf(const uint8_t *str, ...);
+void print(uint8_t sumbol);
 void sprintf(uint8_t *dest, const uint8_t *str, ...);
-void init_cursor_pos(void);
-void set_terminal_tem(uint8_t background, uint8_t text_color);
 void convert_int_to_string(uint32_t num, uint8_t *buff);
 
 #define TEXT_MOD_X   80
@@ -38,7 +40,7 @@ void convert_int_to_string(uint32_t num, uint8_t *buff);
 #define YELLOW       0x0E
 #define WHITE        0x0F
 
-#define START_VIDEO_MEM (char *)0xb8000
+#define START_VIDEO_MEM (uint16_t *)0xb8000
 #define ZERO_CHAR 48
 
 #endif

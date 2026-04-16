@@ -6,7 +6,7 @@
 #include "../uint.h"
 #include "../stdio.h"
 
-char *videoMem = START_VIDEO_MEM;
+// char *videoMem = START_VIDEO_MEM;
 
 // void printf(char* mess, int color ){
 //     if(color == 0){
@@ -43,6 +43,8 @@ int start_kernel(void){
     init_idt();
     enable_irq();
     __asm__ __volatile__ ("sti");
+    init_video_mem();
+    clear_screen();
     main();
     return 0;
 }

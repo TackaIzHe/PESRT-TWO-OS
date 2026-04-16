@@ -22,7 +22,7 @@ ASM_FILES        := kernel_entry.o
 KERNEL_CO_FLAG   ?= --static -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector
 
 KERNEL_ASM_FILES := kernel.o
-KERNEL_INT       := keybord.o timer.o null.o
+KERNEL_INT       := keybord.o timer.o null.o video.o
 KERNEL_IDT       := pic.o idt.o io.o
 KERNEL_GDT       := gdt.o tss.o
 KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o kernel.o

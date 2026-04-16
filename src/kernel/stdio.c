@@ -4,9 +4,7 @@
 #include "string.h"
 
 uint8_t press_key = 0;
-uint16_t* cursor_pos = 0;
 uint8_t cursor_offset = 0;
-uint8_t terminal_tem = ((BLACK << 4) | WHITE);
 uint8_t user_line[255] = "<PESRT-TWO-OS>[_] /";
 
 static inline uint8_t sumbole_down_convert(uint8_t sumb);
@@ -27,25 +25,71 @@ void scan_key(void) {
 
 }
 
-void clear_screen(uint32_t x, uint32_t y) {
-    uint16_t *start = (uint16_t*)START_VIDEO_MEM;
-    for (uint32_t i = 0; i < y * x; i++)
-        *(start + i) = (terminal_tem << 8) | 0;
+void init_video_mem(void) {
+    __asm__ __volatile__ ("int $0x80");
 }
-void init_cursor_pos(void) {
-    cursor_pos = (uint16_t *)START_VIDEO_MEM;
+
+void clear_screen(void) {
+    __asm__ __volatile__ ("int $0x81");
+}
+void set_cursor_pos(uint32_t x, uint32_t y) {
+    __asm__ __volatile__ ("int $0x82");
 }
 
 void set_terminal_tem(uint8_t background, uint8_t text_color) {
-    terminal_tem = ((background << 4) | text_color);
+    __asm__ __volatile__ ("int $0x83");
+}
+
+void print(uint8_t sumbol) {
+    __asm__ __volatile__ ("int $0x84");
 }
 
 void printf(const uint8_t *str, ...) {
     uint8_t buffer[1024];
-    uint32_t len = strlen(str);
+    uint32_t cur_arg = 1;
+    strcpy(buffer, str);
+    uint32_t len = strlen(buffer);
     for (uint32_t i = 0; i < len; i++) {
-        *cursor_pos = (terminal_tem << 8) | str[i];
-        cursor_pos++;
+        if (buffer[i] == '%') {
+            switch (buffer[i+1]) {
+                case 'c': {
+                    buffer[i] = *(uint8_t*)(&str + cur_arg);
+                    strcpy(buffer + i + 1, (buffer + i + 2));
+                    len = strlen(buffer);
+                    i++;
+                    cur_arg++;
+                    break;
+                }
+                case 'd': {
+                    uint8_t int_str[15];
+                    uint8_t rigth_half[1024];
+                    convert_int_to_string(*((uint32_t*)(&str + cur_arg)), int_str);
+                    strcpy(rigth_half, (buffer + i + 2));
+                    strcpy(buffer + i, int_str);
+                    uint32_t new_len = strlen(int_str) + i;
+                    strcpy(buffer + new_len, rigth_half);
+                    cur_arg++;
+                    len = strlen(buffer);
+                    i++;
+                    break;
+                }
+                case 's': {
+                    uint8_t rigth_half[1024];
+                    strcpy(rigth_half, buffer + i + 2);
+                    strcpy(buffer + i, *((uint8_t**)(&str + cur_arg)));
+                    uint32_t new_len = strlen(*((uint8_t**)(&str + cur_arg))) + i;
+                    strcpy(buffer + new_len, rigth_half);
+                    cur_arg++;
+                    len = strlen(buffer);
+                    i++;
+                    break;
+                }
+            }
+        }
+    }
+    len = strlen(buffer);
+    for (uint32_t i = 0; i < len; i++) {
+        print(buffer[i]);
     }
 }
 
@@ -92,7 +136,6 @@ void sprintf(uint8_t *dest, const uint8_t *str, ...) {
             }
         }
     }
-    len = strlen(buffer);
     strcpy(dest, buffer);
 }
 
