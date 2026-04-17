@@ -2,6 +2,7 @@
 #define __STDIO_H__
 
 #include "uint.h"
+#include "tty.h"
 
 void scan(uint8_t *key);
 void scanf(uint8_t *buff);

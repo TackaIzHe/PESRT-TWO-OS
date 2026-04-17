@@ -25,7 +25,8 @@ KERNEL_ASM_FILES := kernel.o
 KERNEL_INT       := keybord.o timer.o null.o video.o
 KERNEL_IDT       := pic.o idt.o io.o
 KERNEL_GDT       := gdt.o tss.o
-KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o kernel.o
+KERNEL_ASH       := ash.o
+KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o kernel.o ${KERNEL_ASH}
 
 .PHONY: all debug ASM KERNEL LINK START_QEMU mkdir clean_obj clean
 

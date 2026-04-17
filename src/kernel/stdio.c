@@ -6,7 +6,6 @@
 
 tty_atr tty = {0};
 uint8_t cursor_offset = 0;
-uint8_t user_line[255] = "<PESRT-TWO-OS>[%s] /";
 
 static inline uint8_t sumbole_down_convert(uint8_t sumb);
 static inline uint8_t sumbole_up_convert(uint8_t sumb);
@@ -214,7 +213,7 @@ static inline uint8_t sumbole_down_convert(uint8_t sumb) {
         case 42:  return 'S'; //SHIFT L
         case 54:  return 'S'; //SHIFT R
         case 56:  return 'A'; //ALT
-        case 57:  return 'S'; //SPACE
+        case 57:  return ' '; //SPACE
         case 58:  return 'C'; //CAPS LOC
         case 91:  return 'W'; //WIN BUTTON L
         case 92:  return 'W'; //WIN BUTTON R

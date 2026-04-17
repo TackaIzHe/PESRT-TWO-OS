@@ -1,6 +1,8 @@
 #include "first_kernel/kernel.h"
 #include "stdio.h"
 
+int ash_main(void);
+
 void main(void) {
     printf("1 HELLO WORLD !!! %s %d \n2 asdqw \n", "asdqw", 12341);
     printf("3 HELLO WORLD !!! %s %d \n4 asdqw \n", "asdqw", 12341);
@@ -23,9 +25,7 @@ void main(void) {
     clear_screen();
     set_cursor_pos(0, 0);
     
-    uint8_t buff[200];
-    scanf(buff);
-    printf("%s", buff);
+    ash_main();
     while(1)
     {
         __asm__ __volatile__ ("hlt");

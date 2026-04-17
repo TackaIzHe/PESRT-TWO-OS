@@ -6,28 +6,8 @@
 #include "../uint.h"
 #include "../stdio.h"
 
-// char *videoMem = START_VIDEO_MEM;
+extern tty_atr tty;
 
-// void printf(char* mess, int color ){
-//     if(color == 0){
-//         color = 0x0f;
-//     }
-//     int i = 0;
-//     char *j = videoMem;
-//     *j = *(mess+3);
-//     while( *(mess+i) != 0 )
-//     {
-//         *j = mess[i];
-//         j += 1;
-//         *j = color;
-//         j += 1;
-//         i++;   
-//     }
-// }
-
-void init() {
-    // press_key = 48;
-}
 /**
  * Нужно настроить link.ld 
  * Нужно что то сделать с idt и маской pic
@@ -45,6 +25,10 @@ int start_kernel(void){
     __asm__ __volatile__ ("sti");
     init_video_mem();
     clear_screen();
+    tty.cursor_chars[0] = '\\';
+    tty.cursor_chars[1] =  '-';
+    tty.cursor_chars[2] =  '/';
+    tty.cursor_chars[3] =  '|';
     main();
     return 0;
 }

@@ -5,7 +5,7 @@
 // Инит таймера
 static inline void lapic_timer_init(void) {
     *((uint32_t*)LAPIC_TIMER_BASE + TIMER_VECTOR) |= 1<<8;
-    *(uint32_t*)LAPIC_TIMER_TDCR   = 0x3;      
+    *(uint32_t*)LAPIC_TIMER_TDCR   = 0xA;      
     *(uint32_t*)LAPIC_TIMER_TMICT  = 0xFFFF;
     *(uint32_t*)LAPIC_TIMER_VEC  = 0x20000 | 0x20 | (1 << 17);  
     return;
