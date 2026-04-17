@@ -98,7 +98,7 @@ static inline void backspace_func(void) {
             video.cursor_pos_x--;
         }
     }
-    else if (video.cursor_pos_y > 0) {
+    if (video.cursor_pos_y > 0) {
         if (video.cursor_pos_x == 0) {
             video.cursor_pos_x = TEXT_MOD_X - 1;
             video.cursor_pos_y--;
