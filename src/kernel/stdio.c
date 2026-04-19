@@ -195,7 +195,14 @@ void convert_int_to_string(uint32_t num, uint8_t *buff) {
         ostatok = ostatok / 10;
         i--;
     }
+
+    if (len == 0) {
+        buff[len] = '0';
+        buff[len+1] = '\0';
+        goto _exit;
+    }
     buff[len] = '\0';
+_exit:
 }
 
 uint32_t convert_string_to_int(uint8_t *string) {

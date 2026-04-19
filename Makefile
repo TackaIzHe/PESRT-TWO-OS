@@ -26,7 +26,8 @@ KERNEL_INT       := keybord.o timer.o null.o video.o
 KERNEL_IDT       := pic.o idt.o io.o
 KERNEL_GDT       := gdt.o tss.o
 KERNEL_ASH       := ash.o
-KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o kernel.o ${KERNEL_ASH}
+KERNEL_PCI       := pci_find_gpu.o
+KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o kernel.o ${KERNEL_ASH} ${KERNEL_PCI}
 
 .PHONY: all debug ASM KERNEL LINK START_QEMU mkdir clean_obj clean
 
@@ -69,6 +70,9 @@ KERNEL: ${KERNEL_ASM_FILES} ${KERNEL_FILES}
 %.o: ${SOURCE_DIR}/${KERNEL_DIR}/idt/%.c
 	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@
 
+%.o: ${SOURCE_DIR}/${KERNEL_DIR}/video_driver/%.c
+	${CC} ${KERNEL_CO_FLAG} -c $^ -o ${OBJ_DIR}/$@
+
 LINK:
 	cd ${OBJ_DIR} && \
 	${LINKER} --gc-sections -m elf_i386 -Ttext 0x1000 -o ../${BIN_DIR}/full_kernel.elf ${ASM_FILES} ${KERNEL_FILES} -Map ../bin/map.txt
@@ -82,7 +86,7 @@ LINK:
 	cat *.bin > ${OS_NAME}
 
 START_QEMU:
-	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},index=0,if=floppy -m 128M -no-reboot #-s -S #-d int -d cpu
+	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},index=0,if=floppy -m 128M -vga std -no-reboot #-s -S #-d int -d cpu
 
 mkdir:
 	@echo -e '\033[0;93m !!! Make directory !!! \033[0m'
