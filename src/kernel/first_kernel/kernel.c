@@ -5,8 +5,14 @@
 #include "../idt/pic.h"
 #include "../uint.h"
 #include "../stdio.h"
+#include "../video_driver/pci.h"
+#include "../video_driver/vbe.h"
 
 extern tty_atr tty;
+
+void exit_real_mode(void) {
+
+}
 
 /**
  * Нужно настроить link.ld 
@@ -29,6 +35,8 @@ int start_kernel(void){
     tty.cursor_chars[1] =  '-';
     tty.cursor_chars[2] =  '/';
     tty.cursor_chars[3] =  '|';
+    pci_find_device();
+    init_graphics_vbe();
     main();
     return 0;
 }

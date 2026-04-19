@@ -10,6 +10,17 @@ uint8_t inb(uint16_t port) {
     __asm__ __volatile__ ("inb %1, %0" : "=a"(val) : "Nd"(port));
     return val;
 }
+
+void outw(uint16_t port, uint16_t value) {
+    __asm__ __volatile__ ("outw %0, %1" : : "a"(value), "Nd"(port));
+}
+
+uint16_t inw(uint16_t port) {
+    uint16_t val;
+    __asm__ __volatile__ ("inw %1, %0" : "=a"(val) : "Nd"(port) : "memory");
+    return val;
+}
+
 //найти ошибку в данной функции
 void outl(uint16_t port, uint32_t value) {
     __asm__ __volatile__ ("outl %0, %1" : : "a"(value), "Nd"(port) : "memory");

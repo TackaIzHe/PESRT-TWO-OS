@@ -17,7 +17,7 @@ void scanf(uint8_t *buff) {
         scan(&x);
         if (x == '\0')
             continue;
-        if (x == BACKSPACE)
+        if (x == BACKSPACE) {
             if (i > 0) {
                 i--;
                 x = 0;
@@ -25,6 +25,8 @@ void scanf(uint8_t *buff) {
                 print(BACKSPACE);
                 continue;
             }
+            continue;
+        }
             
         buff[i] = x;
         print(x);
