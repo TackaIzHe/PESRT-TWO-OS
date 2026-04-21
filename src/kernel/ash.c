@@ -63,7 +63,7 @@ static inline int convert_str_to_comand(const uint8_t *str) {
 static inline int comand_list(const uint16_t comand_number, const uint8_t *arg, uint32_t cnt_str, uint32_t str_len) {
     switch (comand_number) {
         case CMD_ECHO:           return echo(arg, cnt_str, str_len);
-        case CMD_CAT:            return echo(arg, cnt_str, str_len);
+        case CMD_CAT:            return cat(arg, cnt_str, str_len);
         case CMD_PROCEDURE:      return echo(arg, cnt_str, str_len);
         case CMD_LS:             return echo(arg, cnt_str, str_len);
         case CMD_MKDIR:          return echo(arg, cnt_str, str_len);
@@ -79,7 +79,8 @@ static inline int echo(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     printf("echo");
 }
 static inline int cat(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-
+    // vbe_info_t *qwe = vbe_get_info();
+    // printf("%d \n", qwe->version);
 }
 static inline int ls(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
 
@@ -106,7 +107,7 @@ void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
     // В реальности: offset = y * pitch + x * (bpp / 8);
 
     // Записываем цвет (little-endian)
-    *(uint32_t*)(mode_info.framebuffer + offset) = color;
+    // *(uint32_t*)(mode_info.framebuffer + offset) = color;
 }
 
 static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
@@ -114,7 +115,7 @@ static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     uint8_t class = check_GPU_class();
     uint8_t revision_id = check_GPU_revision_id();
  
-    printf("%d %d\n", mode_info.framebuffer, mode_info.width);
+    // printf("%d %d\n", mode_info.framebuffer, mode_info.width);
     // draw_pixel(512, 384, 0xFF0000FF);
 }
 

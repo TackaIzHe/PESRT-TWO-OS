@@ -3,133 +3,130 @@
 #include "vbe.h"
 #include "../stdio.h"
 #include "../idt/tss.h"
+#include "../first_kernel/kernel.h"
 
-vbe_info_block_t vbe_info  = {0};
-vbe_mode_info_block_t mode_info = {0};
-// Выделяем ядерный стек (8 КБ)
-static uint8_t g_kernel_stack[8192] __attribute__((aligned(16)));
+#define SEG_ADDR(s)	((uint32_t)(s) << 4)
 
-static inline void load_v86_segments(void) {
-    __asm__ __volatile__(
-        "mov %0, %%ax\n\t"
-        "mov %%ax, %%es\n\t"
-        :
-        : "r" ((uint16_t)0x07C0)
-        : "ax"
-    );
-}
+#define MODE_LFB	(1 << 14)
 
-static inline void vbe_get_controller_info(vbe_info_block_t* info_block) {
-    uint32_t addr = (uint32_t)info_block;
-    if (addr >= 0x10000) {
-        // ОШИБКА: буфер вне реального режима
-        while(1); // зависаем
-    }
-    uint16_t segment = (uint16_t)(addr >> 4);  // ES = addr / 16
-    uint16_t offset  = (uint16_t)(addr & 0xF); // DI = addr % 16
-    call_interrupt(0x4F00, 0, offset, segment);
-}
+vbe_info_t *vbe_get_info(void)
+{
+	vbe_info_t *info;
+	vm86_regs_t regs;
 
-static inline void vbe_get_mode_info(uint16_t mode_number, vbe_mode_info_block_t* mode_info) {
-    uint32_t addr = (uint32_t)mode_info;
-    if (addr >= 0x10000) {
-        while(1); // зависаем
-    }
-    uint16_t segment = (uint16_t)(addr >> 4);
-    uint16_t offset  = (uint16_t)(addr & 0xF);
-    call_interrupt(0x4F01, mode_number, offset, segment);
-}
+	info = (vbe_info_t*)low_mem_buffer;
 
-static inline void vbe_set_mode(uint16_t mode_number) {
-    call_interrupt(0x4F02, mode_number | 0x4000, 0, 0);
-}
-
-void init_graphics_vbe(void) {
-    // Буфер в нижних 64KB — обязательно!
-
-    vbe_get_controller_info(&vbe_info);
-
-    // Проверка: VESA-совместимость
-    // if (memcmp(vbe_info.signature, "VESA", 4) != 0) {
-    //     return; // VBE не поддерживается
-    // }
-    printf("%s\n", vbe_info.signature);
-    printf("VBE Version: %d\n", vbe_info.version);
-  printf("Total Memory: %d MB\n", vbe_info.total_memory * 64 / 1024);
-
-    uint16_t desired_mode = 0x11B; // 1024x768x24
-
-    vbe_get_mode_info(desired_mode, &mode_info);
-
-    // Проверка: режим поддерживает графику и доступен
-    if (!(mode_info.attributes & (1 << 7))) { // Bit 7: Mode is supported
-        goto _exit;
-    }
-
-     printf("Framebuffer: 0x%d\n", mode_info.framebuffer);
-    printf("Resolution: %dx%d, %dbpp\n", mode_info.width, mode_info.height, mode_info.bits_per_pixel);
-
-
-
-    vbe_set_mode(desired_mode);
-_exit:
-}
-
-void enter_vm86_mode(vm86_regs_t* vm86_context) {
-    // Указатель на вершину стека (верхний адрес)
-    uint32_t g_kernel_stack_top = (uint32_t)(g_kernel_stack + sizeof(g_kernel_stack));
     
-    // 1. Установить IP и CS в VM86-контексте
-    //    Предположим: CS = 0x1000, IP = 0x0000 — начало виртуального сегмента
-    vm86_context->cs = 0x1000;   // Пример: сегмент кода виртуальной 8086 задачи
-    vm86_context->ip = 0x0000;   // Стартовый IP
-    vm86_context->ss = 0x1000;   // Сегмент стека
-    vm86_context->sp = 0xFFFF;   // Верх стека
+	memcpy((uint8_t*)info->sig, "VBE2", 4);
 
-    // 2. Установить флаг VM (бит 17) в EFLAGS
-    vm86_context->flags = 0x00000200; // VM = 1, IF = 1 (разрешить прерывания)
+	memset((uint8_t*)&regs, 0, sizeof regs);
+	regs.es = (uint32_t)info >> 4;
+	regs.eax = 0x4f00;
+	int86(0x10, &regs);
 
-    // 3. Установить регистры сегментов в соответствии с реальными сегментами
-    //    В VM86 mode сегменты используются как в Real Mode: смещение = сегмент * 16
-    vm86_context->ds = 0x1000;
-    vm86_context->es = 0x1000;
-    vm86_context->fs = 0x1000;
-    vm86_context->gs = 0x1000;
+	if((regs.eax & 0xffff) != 0x4f) {
+		return 0;
+	}
 
-    // 4. Установить TSS: ESP0 — стек ядра при входе в ядро из VM86 (для обработки прерываний)
-    tss.esp0 = (uint32_t)&g_kernel_stack_top; // Убедитесь, что g_kernel_stack_top определён
-    tss.ss0 = 0x10; // Дескриптор сегмента ядра (ring 0)
+	return info;
+}
 
-    // 5. Установить EFLAGS и EIP в TSS (не обязательно, но для надёжности)
-    tss.eip = (uint32_t)vm86_context->ip;
-    tss.eflags = vm86_context->flags;
+vbe_mode_info_t *vbe_get_mode_info(int mode)
+{
+	vbe_mode_info_t *mi;
+	vm86_regs_t regs;
 
-    // 6. Загрузить TSS в процессор
-    asm volatile("ltr %%ax" :: "a" (0x28)); // 0x28 — смещение TSS в GDT (пример)
+	mi = (vbe_mode_info_t*)(low_mem_buffer + 512);
 
-    // 7. Подготовить стек для IRET — в стеке должен лежать: SS, ESP, EFLAGS, CS, IP
-    //    Мы будем использовать "виртуальный" стек задачи, но для перехода — нужно "подделать" IRET
-    //    Для этого используем "фальшивый" стек в ядре, который затем будет использован IRET
+	memset((uint8_t*)&regs, 0, sizeof regs);
+	regs.es = (uint32_t)mi >> 4;
+	regs.eax = 0x4f01;
+	regs.ecx = mode;
+	int86(0x10, &regs);
 
-    // 8. Поместить контекст в стек, как если бы мы делали CALL
-    //    Но для перехода в VM86 — мы используем IRET с флагом VM
-    //    Поэтому подготовим стек для IRET
+	if((regs.eax & 0xffff) != 0x4f) {
+		return 0;
+	}
 
-    uint32_t* stack_ptr = (uint32_t*)&g_kernel_stack_top;
-    *(--stack_ptr) = vm86_context->ss;   // SS
-    *(--stack_ptr) = vm86_context->sp;   // ESP
-    *(--stack_ptr) = vm86_context->flags | 0x200; // EFLAGS (VM=1)
-    *(--stack_ptr) = vm86_context->cs;   // CS
-    *(--stack_ptr) = vm86_context->ip;   // IP
+	return mi;
+}
 
-    // 9. Установить указатель стека на этот стек
-    asm volatile(
-        "mov %0, %%esp\n"      // Установить ESP на подготовленный стек
-        "iret\n"               // IRET переключит в VM86 mode!
-        :
-        : "r" (stack_ptr)
-        : "memory"
-    );
-    // После IRET — процессор перейдёт в VM86 mode и начнёт выполнять код по CS:IP
-    // Эта функция НЕ возвращается!
+int vbe_set_mode(int mode)
+{
+	vm86_regs_t regs;
+
+	memset((uint8_t*)&regs, 0, sizeof regs);
+	regs.eax = 0x4f02;
+	regs.ebx = mode;
+	int86(0x10, &regs);
+
+	if(regs.eax == 0x100) {
+		return -1;
+	}
+	return 0;
+}
+
+void print_mode_info(vbe_mode_info_t *mi)
+{
+	static unsigned int maskbits[] = {0, 1, 3, 7, 0xf, 0x1f, 0x3f, 0x7f, 0xff};
+
+	printf("resolution: %dx%d\n", mi->xres, mi->yres);
+	printf("color depth: %d\n", mi->bpp);
+	printf("mode attributes: %x\n", mi->mode_attr);
+	printf("bytes per scanline: %d\n", mi->scanline_bytes);
+	printf("number of planes: %d\n", (int)mi->num_planes);
+	printf("number of banks: %d\n", (int)mi->num_banks);
+	printf("mem model: %d\n", (int)mi->mem_model);
+	printf("red bits: %d (mask: %x)\n", (int)mi->rmask_size, maskbits[mi->rmask_size] << mi->rpos);
+	printf("green bits: %d (mask: %x)\n", (int)mi->gmask_size, maskbits[mi->gmask_size] << mi->gpos);
+	printf("blue bits: %d (mask: %x)\n", (int)mi->bmask_size, maskbits[mi->bmask_size] << mi->bpos);
+	printf("framebuffer address: %x\n", (unsigned int)mi->fb_addr);
+}
+
+int vbe_get_edid(vbe_edid_t *edid)
+{
+	vm86_regs_t regs;
+
+	memset((uint8_t*)&regs, 0, sizeof regs);
+	regs.es = (uint32_t)low_mem_buffer >> 4;
+	regs.eax = 0x4f15;
+	regs.ebx = 1;
+	int86(0x10, &regs);
+
+	if((regs.eax & 0xffff) != 0x4f) {
+		return -1;
+	}
+	memcpy((uint8_t*)edid, low_mem_buffer, sizeof *edid);
+	return 0;
+}
+
+int edid_preferred_resolution(vbe_edid_t *edid, int *xres, int *yres)
+{
+	if(memcmp((uint8_t*)edid->magic, VBE_EDID_MAGIC, 8) != 0) {
+		return -1;
+	}
+
+	*xres = (int)edid->timing[0].hactive_lsb | ((int)(edid->timing[0].hact_hblank_msb & 0xf0) << 4);
+	*yres = (int)edid->timing[0].vactive_lsb | ((int)(edid->timing[0].vact_vblank_msb & 0xf0) << 4);
+	return 0;
+}
+
+void print_edid(vbe_edid_t *edid)
+{
+	char vendor[4];
+	int xres, yres;
+
+	if(memcmp((uint8_t*)edid->magic, VBE_EDID_MAGIC, 8) != 0) {
+		printf("invalid EDID magic\n");
+		return;
+	}
+
+	vendor[0] = (edid->vendor >> 10) & 0x1f;
+	vendor[1] = (edid->vendor >> 5) & 0x1f;
+	vendor[2] = edid->vendor & 0x1f;
+	vendor[3] = 0;
+	printf("Manufacturer: %s\n", vendor);
+
+	edid_preferred_resolution(edid, &xres, &yres);
+	printf("Preferred resolution: %dx%d\n", xres, yres);
 }

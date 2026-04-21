@@ -66,3 +66,20 @@ void strsplit(uint8_t *buffer, uint32_t str_len, const uint8_t *str, uint32_t bu
     }
 _exit:
 }
+
+void memcpy(uint8_t *dest, uint8_t *source, uint32_t size) {
+    for (uint32_t i = 0; i < size; i++) {
+        dest[i] = source[i];
+    }
+}
+
+uint32_t memcmp(uint8_t *mem1, uint8_t *mem2, uint32_t size) {
+    uint8_t flag = -1;
+
+    for (uint32_t i = 0; i < size; i++) {
+        if (mem1[i] != mem2[i])
+            goto _exit;
+    }
+    flag = 0;
+_exit:
+}

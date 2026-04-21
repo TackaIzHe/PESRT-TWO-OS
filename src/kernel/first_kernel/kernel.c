@@ -10,10 +10,6 @@
 
 extern tty_atr tty;
 
-void exit_real_mode(void) {
-
-}
-
 /**
  * Нужно настроить link.ld 
  * Нужно что то сделать с idt и маской pic
@@ -31,12 +27,18 @@ int start_kernel(void){
     __asm__ __volatile__ ("sti");
     init_video_mem();
     clear_screen();
+    vbe_mode_info_t vbe_mode_info;
+    vbe_info_t vbe_info;
+    memcpy((uint8_t*)&vbe_mode_info, (uint8_t*)0x1000, sizeof(vbe_mode_info));
+    memcpy((uint8_t*)&vbe_info, (uint8_t*)0x1500, sizeof(vbe_info));
     tty.cursor_chars[0] = '\\';
     tty.cursor_chars[1] =  '-';
     tty.cursor_chars[2] =  '/';
     tty.cursor_chars[3] =  '|';
-    pci_find_device();
-    init_graphics_vbe();
+    // *((uint32_t*)vbe_mode_info.fb_addr+10) = 0xFFFFFFFF;
+    printf("%d\n", vbe_info.total_mem);
+    while(1){}
+
     main();
     return 0;
 }

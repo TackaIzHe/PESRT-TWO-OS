@@ -17,7 +17,7 @@ GASM             := as
 LINKER           := i386-elf-ld
 
 ASM_BINS         := boot.bin
-ASM_FILES        := kernel_entry.o
+ASM_FILES        := kernel_entry.o int86.o
 
 KERNEL_CO_FLAG   ?= --static -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector
 
@@ -27,7 +27,7 @@ KERNEL_IDT       := pic.o idt.o io.o
 KERNEL_GDT       := gdt.o tss.o
 KERNEL_ASH       := ash.o
 KERNEL_PCI       := pci.o visual_mode.o vbe.o
-KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o kernel.o ${KERNEL_ASH} ${KERNEL_PCI}
+KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o ${KERNEL_ASM_FILES} ${KERNEL_ASH} ${KERNEL_PCI}
 
 .PHONY: all debug ASM KERNEL LINK START_QEMU mkdir clean_obj clean
 
@@ -75,7 +75,7 @@ KERNEL: ${KERNEL_ASM_FILES} ${KERNEL_FILES}
 
 LINK:
 	cd ${OBJ_DIR} && \
-	${LINKER} --gc-sections -m elf_i386 -Ttext 0x1000 -o ../${BIN_DIR}/full_kernel.elf ${ASM_FILES} ${KERNEL_FILES} -Map ../bin/map.txt
+	${LINKER} --gc-sections -m elf_i386 -Ttext 0x2000 -o ../${BIN_DIR}/full_kernel.elf ${ASM_FILES} ${KERNEL_FILES} -Map ../bin/map.txt
 	cd ${BIN_DIR} && \
 	objcopy -O binary --strip-all \
         --only-section=.text \
@@ -86,7 +86,7 @@ LINK:
 	cat *.bin > ${OS_NAME}
 
 START_QEMU:
-	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},index=0,if=floppy -m 128M -vga std -no-reboot #-s -S #-d int -d cpu
+	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},if=ide -m 128M -vga qxl -no-reboot #-s -S #-d int -d cpu
 
 mkdir:
 	@echo -e '\033[0;93m !!! Make directory !!! \033[0m'
