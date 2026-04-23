@@ -2,31 +2,29 @@
 KERNEL_LOCATION equ 0x2000
 global low_mem_buffer
 
-; mov ax, 4F02h
-; mov bx, 411Ch
-; int 0x10
-
-; Читаем структуру vbe_mode_info_t
-mov ax, 0
-mov es, ax
+; Получение даных vbe vbe_mode_info_t
 mov ax, 0x1000
 mov di, ax
-mov ax, 4F00h
-mov bx, 411ch
-int 0x10
-
-; Читае структуру vbe_info_t
 mov ax, 0
 mov es, ax
-mov ax, 0x1500
-mov di, ax
-mov ax, 4F01h
-mov bx, 411ch
+mov ax, 0x4F01      
+mov cx, 0x11A       
 int 0x10
 
-; mov ah, 0x0E
-; mov al, "A"
-; int 0x10
+; Получение даных vbe vbe_info_t
+mov ax, 0x1100
+mov di, ax
+mov ax, 0
+mov es, ax
+mov ax, 0x4F00      
+mov cx, 0x11A       
+int 0x10
+
+mov ax, 0x4F02
+mov cx, 0x411A
+mov bx, 0x411A
+int 0x10
+
 mov [BOOT_DISK], dl                 
 
 
@@ -47,11 +45,11 @@ mov cl, 0x02
 mov dl, [BOOT_DISK]
 int 0x13                ; no error management
 
-mov ah, 0x02  ; Установить позицию курсора
-mov bh, 0x00  ; Страница (обычно 0)
-mov dh, 0x00  ; Строка
-mov dl, 0x00  ; Столбец
-int 0x10               ; text mode
+; mov ah, 0x02  ; Установить позицию курсора
+; mov bh, 0x00  ; Страница (обычно 0)
+; mov dh, 0x00  ; Строка
+; mov dl, 0x00  ; Столбец
+; int 0x10               ; text mode
 
 mov ah, 0x1
 mov ch, 0x5f
@@ -112,7 +110,9 @@ start_protected_mode:
 	mov esp, ebp
     jmp KERNEL_LOCATION
  
-times 510-($-$$) db 0              
+times 510-($-$$) db 0            
 dw 0xaa55
 
 low_mem_buffer:
+
+mode_info:

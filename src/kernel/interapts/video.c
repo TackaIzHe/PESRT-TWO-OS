@@ -1,6 +1,7 @@
 #include "../idt/io.h"
 #include "../stdio.h"
 #include "../idt/pic.h"
+#include "../video_driver/vbe.h"
 #include "video.h"
 
 video_atr video = {0};

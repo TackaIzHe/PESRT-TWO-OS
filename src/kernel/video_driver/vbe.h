@@ -112,7 +112,7 @@ typedef struct {
 } __attribute__((packed)) vbe_edid_t;
 
 extern vbe_info_t vbe_info;
-extern vbe_mode_info_t mode_info;
+extern vbe_mode_info_t vbe_mode_info;
 
 vbe_info_t *vbe_get_info(void);
 vbe_mode_info_t *vbe_get_mode_info(int mode);

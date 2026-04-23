@@ -5,6 +5,9 @@
 #include "../idt/tss.h"
 #include "../first_kernel/kernel.h"
 
+vbe_info_t vbe_info = {0};
+vbe_mode_info_t vbe_mode_info = {0};
+
 #define SEG_ADDR(s)	((uint32_t)(s) << 4)
 
 #define MODE_LFB	(1 << 14)
