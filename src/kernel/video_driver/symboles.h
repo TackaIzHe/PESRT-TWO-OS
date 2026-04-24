@@ -2092,7 +2092,7 @@ const uint16_t sumbole_К[] = { \
     (uint16_t)0b1110000111000000, \
     (uint16_t)0b1110000111000000 };
 
-const uint16_t sumbole_Л= { \
+const uint16_t sumbole_Л[]= { \
     (uint16_t)0b0000000000000000, \
     (uint16_t)0b0000000000000000, \
     (uint16_t)0b0000000000000000, \

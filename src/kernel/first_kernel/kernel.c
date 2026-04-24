@@ -36,11 +36,11 @@ int start_kernel(void){
     tty.cursor_chars[2] =  '/';
     tty.cursor_chars[3] =  '|';
     uint32_t u = 0;
-    const uint16_t *symb = E;
-    for (uint32_t i = 0; i < 16; i++) {
-        for (uint32_t j = 0; j < 13; j++) {
+    const uint16_t *symb = sumbole_вопрос;
+    for (uint32_t i = 0; i < SYMBOLE_HEIGHT; i++) {
+        for (uint32_t j = 0; j < SYMBOLE_WIDTH; j++) {
             uint16_t cur = symb[u];
-            if ((cur >> (12 - j)) & 1) {
+            if ((cur >> (SYMBOLE_WIDTH - j)) & 1) {
                 *((uint16_t*)vbe_mode_info.fb_addr+(i * vbe_mode_info.xres + j)) = 0xFFFF;
             }
         }
