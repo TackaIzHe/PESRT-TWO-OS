@@ -19,7 +19,7 @@ __attribute__((naked)) void timer_interapt(void) {
 
 static inline void print_cursor(void) {
     if (tty.tick_timer_count == 18) {
-        video.vm_array[video.cursor_pos_y][video.cursor_pos_x] = (video.terminal_tem << 8) | tty.cursor_chars[cur_sumbol];
+        p_char(tty.cursor_chars[cur_sumbol], video.cursor_pos_x, video.cursor_pos_y);
         tty.tick_timer_count = 0;
         cur_sumbol++;
         if (cur_sumbol > 3)

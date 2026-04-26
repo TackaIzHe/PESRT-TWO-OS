@@ -64,12 +64,12 @@ static inline int comand_list(const uint16_t comand_number, const uint8_t *arg, 
     switch (comand_number) {
         case CMD_ECHO:           return echo(arg, cnt_str, str_len);
         case CMD_CAT:            return cat(arg, cnt_str, str_len);
-        case CMD_PROCEDURE:      return echo(arg, cnt_str, str_len);
-        case CMD_LS:             return echo(arg, cnt_str, str_len);
-        case CMD_MKDIR:          return echo(arg, cnt_str, str_len);
-        case CMD_TOUCH:          return echo(arg, cnt_str, str_len);
+        case CMD_PROCEDURE:      return procedure(arg, cnt_str, str_len);
+        case CMD_LS:             return ls(arg, cnt_str, str_len);
+        case CMD_MKDIR:          return mkdir(arg, cnt_str, str_len);
+        case CMD_TOUCH:          return touch(arg, cnt_str, str_len);
         case CMD_LSPCI:          return lspci(arg, cnt_str, str_len);
-        case CMD_CGPU:           return cgpu(arg, cnt_str, str_len);
+        // case CMD_CGPU:           return cgpu(arg, cnt_str, str_len);
         case CMD_EXIT:           return CMD_EXIT;
         default:                 return CMD_EXIT;
     }
@@ -83,7 +83,7 @@ static inline int cat(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     // printf("%d \n", qwe->version);
 }
 static inline int ls(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-
+    printf("ls");
 }
 static inline int touch(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
 
@@ -92,8 +92,8 @@ static inline int mkdir(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) 
 
 }
 static inline int lspci(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-    print_PCI_devices();
-    return 0;
+    // print_PCI_devices();
+    // return 0;
 }
 
 void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
@@ -111,9 +111,9 @@ void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
 }
 
 static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-    uint32_t bar = check_GPU_BAR();
-    uint8_t class = check_GPU_class();
-    uint8_t revision_id = check_GPU_revision_id();
+    // uint32_t bar = check_GPU_BAR();
+    // uint8_t class = check_GPU_class();
+    // uint8_t revision_id = check_GPU_revision_id();
  
     // printf("%d %d\n", mode_info.framebuffer, mode_info.width);
     // draw_pixel(512, 384, 0xFF0000FF);
