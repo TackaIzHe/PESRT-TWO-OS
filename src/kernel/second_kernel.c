@@ -2,12 +2,11 @@
 #include "video_driver/pci.h"
 #include "stdio.h"
 #include "string.h"
+#include "fs.h"
 
 int ash_main(void);
 
 void main(void) {
-    uint16_t har[10] = {0};
-    pci_find_device();
     ash_main();
     while(1)
     {

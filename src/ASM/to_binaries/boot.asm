@@ -1,6 +1,6 @@
-[org 0x7c00]                        
+[org 0x7c00]  
 KERNEL_LOCATION equ 0x2000
-global low_mem_buffer
+mov [BOOT_DISK], dl                 
 
 ; Получение даных vbe vbe_mode_info_t
 mov ax, 0x1000
@@ -25,9 +25,6 @@ mov cx, 0x411A
 mov bx, 0x411A
 int 0x10
 
-mov [BOOT_DISK], dl                 
-
-
 xor ax, ax                          
 mov es, ax
 mov ds, ax
@@ -37,19 +34,15 @@ mov sp, bp
 mov bx, KERNEL_LOCATION
 mov dh, 2
 
+; Обнаружелось ограничение QEMU на чтение секторов диска == 0x2E
+; Читает от 2 до 46 включительно
 mov ah, 0x02
-mov al, 0x80
+mov al, 30
 mov ch, 0x00
 mov dh, 0x00
 mov cl, 0x02
 mov dl, [BOOT_DISK]
-int 0x13                ; no error management
-
-; mov ah, 0x02  ; Установить позицию курсора
-; mov bh, 0x00  ; Страница (обычно 0)
-; mov dh, 0x00  ; Строка
-; mov dl, 0x00  ; Столбец
-; int 0x10               ; text mode
+int 0x13
 
 mov ah, 0x1
 mov ch, 0x5f
@@ -112,7 +105,3 @@ start_protected_mode:
  
 times 510-($-$$) db 0            
 dw 0xaa55
-
-low_mem_buffer:
-
-mode_info:

@@ -53,6 +53,9 @@ static inline int convert_str_to_comand(const uint8_t *str) {
     else if (strcmp(arg[0], CMDSTR_CGPU) == 0) {
         cmd = CMD_CGPU;
     }
+    else if (strcmp(arg[0], CMDSTR_PROCEDURE) == 0) {
+        cmd = CMD_PROCEDURE;
+    }
     else if (strcmp(arg[0], CMDSTR_EXIT) == 0) {
         cmd = CMD_EXIT;
     }
@@ -69,7 +72,7 @@ static inline int comand_list(const uint16_t comand_number, const uint8_t *arg, 
         case CMD_MKDIR:          return mkdir(arg, cnt_str, str_len);
         case CMD_TOUCH:          return touch(arg, cnt_str, str_len);
         case CMD_LSPCI:          return lspci(arg, cnt_str, str_len);
-        // case CMD_CGPU:           return cgpu(arg, cnt_str, str_len);
+        case CMD_CGPU:           return cgpu(arg, cnt_str, str_len);
         case CMD_EXIT:           return CMD_EXIT;
         default:                 return CMD_EXIT;
     }
@@ -79,8 +82,7 @@ static inline int echo(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     printf("echo");
 }
 static inline int cat(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-    // vbe_info_t *qwe = vbe_get_info();
-    // printf("%d \n", qwe->version);
+    printf("%d \n", vbe_info.version);
 }
 static inline int ls(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     printf("ls");
@@ -92,33 +94,13 @@ static inline int mkdir(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) 
 
 }
 static inline int lspci(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-    // print_PCI_devices();
-    // return 0;
-}
-
-void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
-    // Проверка границ (опционально)
-    if (x >= 1024 || y >= 768) return;
-
-    // Вычисляем смещение: y * pitch + x * bytes_per_pixel
-    // Предположим: bpp=32 → 4 байта на пиксель
-    uint32_t offset = y * 1024 * 4 + x * 4; // pitch = 1024 * 4 (если 32bpp)
-    // ⚠️ ЛУЧШЕ: использовать mode_info.pitch, а не хардкодить!
-    // В реальности: offset = y * pitch + x * (bpp / 8);
-
-    // Записываем цвет (little-endian)
-    // *(uint32_t*)(mode_info.framebuffer + offset) = color;
+    print_PCI_devices();
 }
 
 static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-    // uint32_t bar = check_GPU_BAR();
-    // uint8_t class = check_GPU_class();
-    // uint8_t revision_id = check_GPU_revision_id();
- 
-    // printf("%d %d\n", mode_info.framebuffer, mode_info.width);
-    // draw_pixel(512, 384, 0xFF0000FF);
+
 }
 
 static inline int procedure(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-
+    main_procedure(123412);
 }

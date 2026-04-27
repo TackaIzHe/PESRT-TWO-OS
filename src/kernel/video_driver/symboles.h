@@ -4098,6 +4098,7 @@ const uint16_t* get_symbole_buffer_en(uint8_t symbole);
 #define COD_SYMBOL_QUESTION     '?'
 #define COD_SYMBOL_PIPE         '|'
 #define COD_SYMBOL_SPACE        ' '       
+#define COD_SYMBOL_DOT          '.'
 #define COD_SYMBOL_NULL         '\0'
 
 #define COD_SYMBOL_0  '0'

@@ -42,6 +42,11 @@ void init_idt(void) {
     idt_set_gate(0x84, (uint32_t)print_char_interapt,
     0x08, 0x8E | 0x60);  // 0x6
 
+    idt_set_gate(0x90, (uint32_t)reset_disk_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x91, (uint32_t)read_disk_sectors_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
     // Загружаем IDT
     idtr.limit = sizeof(IDTEntry) * IDT_LENGHT - 1;
     idtr.base = (uint32_t)&idt;

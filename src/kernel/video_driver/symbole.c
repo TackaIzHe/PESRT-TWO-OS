@@ -3459,29 +3459,29 @@ const uint16_t symbole_pipe[] = { \
     (uint16_t)0b0000001100000000, \
     (uint16_t)0b0000001100000000 };
 
-const uint16_t symbole_null[] = { \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0, \
-    (uint16_t)0b0 };
+const uint16_t symbole_dot[] = { \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0000000000000000, \
+    (uint16_t)0b0001111000000000, \
+    (uint16_t)0b0011111100000000, \
+    (uint16_t)0b0011111100000000, \
+    (uint16_t)0b0001111000000000 };
 
-const uint16_t symbole_space[] = { \
+const uint16_t symbole_null[] = { \
     (uint16_t)0b0, \
     (uint16_t)0b0, \
     (uint16_t)0b0, \
@@ -3589,7 +3589,8 @@ const uint16_t* get_symbole_buffer_en(uint8_t symbole) {
         case COD_SYMBOL_SLASH:        return symbole_slash;
         case COD_SYMBOL_QUESTION:     return symbole_question;
         case COD_SYMBOL_PIPE:         return symbole_pipe;
-        case COD_SYMBOL_SPACE:        return symbole_space;
+        case COD_SYMBOL_SPACE:        return symbole_null;
+        case COD_SYMBOL_DOT:          return symbole_dot;
 
         case COD_SYMBOL_0:            return symbole_0;
         case COD_SYMBOL_1:            return symbole_1;
@@ -3604,7 +3605,7 @@ const uint16_t* get_symbole_buffer_en(uint8_t symbole) {
 
         // Для нулевого символа возвращаем соответствующую переменную
         case COD_SYMBOL_NULL:         return symbole_null;
-
+        default:                      return symbole_null;
     }
 }
 

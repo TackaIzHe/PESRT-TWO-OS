@@ -16,18 +16,18 @@ CC               := i386-elf-gcc
 GASM             := as
 LINKER           := i386-elf-ld
 
-ASM_BINS         := boot.bin
+ASM_BINS         := boot.bin null.bin
 ASM_FILES        := kernel_entry.o int86.o
 
 KERNEL_CO_FLAG   ?= --static -nostdlib -ffreestanding -m32 -fno-PIC -fno-stack-protector
 
-KERNEL_ASM_FILES := kernel.o
-KERNEL_INT       := keybord.o timer.o null.o video.o
+KERNEL_ASM_FILES := kernel.o 
+KERNEL_INT       := keybord.o timer.o null.o video.o disk.o
 KERNEL_IDT       := pic.o idt.o io.o
 KERNEL_GDT       := gdt.o tss.o
-KERNEL_ASH       := ash.o
+KERNEL_ASH       := ash.o procedure.o
 KERNEL_PCI       := pci.o visual_mode.o vbe.o symbole.o
-KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} string.o stdio.o ${KERNEL_INT} second_kernel.o ${KERNEL_ASM_FILES} ${KERNEL_ASH} ${KERNEL_PCI}
+KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} ${KERNEL_INT} ${KERNEL_ASM_FILES} string.o stdio.o fs.o second_kernel.o ${KERNEL_ASH} ${KERNEL_PCI}
 
 .PHONY: all debug ASM KERNEL LINK START_QEMU mkdir clean_obj clean
 
@@ -83,7 +83,7 @@ LINK:
         --only-section=.data \
         --only-section=.bss \
         ${KERNEL_NAME} full_kernel.bin && \
-	cat *.bin > ${OS_NAME}
+	cat boot.bin full_kernel.bin null.bin > ${OS_NAME}
 
 START_QEMU:
 	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},if=ide -m 128M -vga qxl -no-reboot #-s -S #-d int -d cpu

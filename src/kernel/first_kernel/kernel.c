@@ -7,15 +7,16 @@
 #include "../stdio.h"
 #include "../video_driver/pci.h"
 #include "../video_driver/vbe.h"
-#include "../video_driver/symboles.h"
-#include "../interapts/video.h"
+#include "../fs.h"
 extern tty_atr tty;
 
-/**
- * Нужно настроить link.ld 
- * Нужно что то сделать с idt и маской pic
- */
-int start_kernel(void){
+void init_main_kernel(void) {
+    uint32_t adr = 0x2000 + (64*512);
+    read_disk_sectors(1, 64, (void*)(0x2000));
+    read_disk_sectors(64, 200, (void*)(0x10000));
+}
+
+int start_kernel(void) {
     memcpy((uint8_t*)&vbe_mode_info, (uint8_t*)0x1000, sizeof(vbe_mode_info));
     memcpy((uint8_t*)&vbe_info, (uint8_t*)0x1100, sizeof(vbe_info));
     __asm__ __volatile__ ("cli");
@@ -32,9 +33,12 @@ int start_kernel(void){
     tty.cursor_chars[2] =  '/';
     tty.cursor_chars[3] =  '|';
     __asm__ __volatile__ ("sti");
+    reset_disk();
+    init_main_kernel();
     init_video_mem();
     clear_screen();
-    
+    pci_find_device();
+
     main();
     return 0;
 }

@@ -23,4 +23,6 @@
 
 #define USER_LINE "<PESRT-TWO-OS>[%s] / "
 
+uint32_t main_procedure(uint32_t patern);
+
 #endif

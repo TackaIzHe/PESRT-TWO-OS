@@ -13,8 +13,8 @@ struct video_atr {
 } typedef video_atr;
 
 void p_char(uint8_t symbole, uint32_t posX, uint32_t posY);
-
-
+uint16_t get_pixel(uint32_t posX, uint32_t posY);
+void set_pixel(uint16_t color, uint32_t posX, uint32_t posY);
 // struct video_atr {
 //     uint32_t cursor_pos_x;
 //     uint32_t cursor_pos_y;

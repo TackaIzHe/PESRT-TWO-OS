@@ -8,11 +8,10 @@
 video_atr video = {0};
 static inline void backspace_func(void);
 static inline void scroll_page(void);
-static uint16_t get_pixel(uint32_t posX, uint32_t posY);
-static void set_pixel(uint16_t color, uint32_t posX, uint32_t posY);
+// uint16_t get_pixel(uint32_t posX, uint32_t posY);
+// void set_pixel(uint16_t color, uint32_t posX, uint32_t posY);
 void p_char(uint8_t symbole, uint32_t posX, uint32_t posY);
 
-static uint16_t video_mem[2000*2000] = {0};
 void p_char(uint8_t symbole, uint32_t posX, uint32_t posY) {
     uint32_t u = 0;
     const uint16_t *symb = get_symbole_buffer_en(symbole);
@@ -32,11 +31,11 @@ void p_char(uint8_t symbole, uint32_t posX, uint32_t posY) {
     }
 }
 
-static uint16_t get_pixel(uint32_t posX, uint32_t posY) {
+uint16_t get_pixel(uint32_t posX, uint32_t posY) {
     return *((uint16_t*)vbe_mode_info.fb_addr+(posY * vbe_mode_info.xres + posX));
 }
 
-static void set_pixel(uint16_t color, uint32_t posX, uint32_t posY) {
+void set_pixel(uint16_t color, uint32_t posX, uint32_t posY) {
     *((uint16_t*)vbe_mode_info.fb_addr+(posY * vbe_mode_info.xres + posX)) = color;
 }
 
@@ -53,7 +52,7 @@ __attribute__((naked)) void init_video_interapt(void) {
 __attribute__((naked)) void clear_screen_video_interapt(void) {
     for (uint32_t i = 0; i < vbe_mode_info.yres / SYMBOLE_HEIGHT; i++)
         for (uint32_t j = 0; j < vbe_mode_info.xres / SYMBOLE_WIDTH; j++)
-            p_char(' ', j, i);
+            // p_char(' ', j, i);
 
     video.cursor_pos_x = 0;
     video.cursor_pos_y = 0;

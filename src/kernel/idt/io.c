@@ -31,3 +31,13 @@ uint32_t inl(uint16_t port) {
     __asm__ __volatile__ ("inl %1, %0" : "=a"(val) : "Nd"(port) : "memory");
     return val;
 }
+
+void insw(uint16_t port, void *buf, uint32_t cnt) {
+    __asm__ __volatile__ (
+        "rep insw"          /* читаем cnt 16-битных слов */
+        : "+D" (buf),       /* EDI/EDI обновится (куда копируем) */
+          "+c" (cnt)        /* ECX обновится (сколько слов)      */
+        : "d"  (port)       /* порт в EDX                       */
+        : "memory"
+    );
+}
