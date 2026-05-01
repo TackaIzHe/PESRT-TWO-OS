@@ -15,6 +15,7 @@ static inline int mkdir(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 static inline int procedure(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 static inline int lspci(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
+static inline int clear(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 
 int ash_main(void) {
     uint8_t buffer[1024] = {0};
@@ -56,6 +57,9 @@ static inline int convert_str_to_comand(const uint8_t *str) {
     else if (strcmp(arg[0], CMDSTR_PROCEDURE) == 0) {
         cmd = CMD_PROCEDURE;
     }
+    else if (strcmp(arg[0], CMDSTR_CLEAR) == 0) {
+        cmd = CMD_CLEAR;
+    }
     else if (strcmp(arg[0], CMDSTR_EXIT) == 0) {
         cmd = CMD_EXIT;
     }
@@ -73,6 +77,7 @@ static inline int comand_list(const uint16_t comand_number, const uint8_t *arg, 
         case CMD_TOUCH:          return touch(arg, cnt_str, str_len);
         case CMD_LSPCI:          return lspci(arg, cnt_str, str_len);
         case CMD_CGPU:           return cgpu(arg, cnt_str, str_len);
+        case CMD_CLEAR:          return clear(arg, cnt_str, str_len);
         case CMD_EXIT:           return CMD_EXIT;
         default:                 return CMD_EXIT;
     }
@@ -99,6 +104,10 @@ static inline int lspci(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) 
 
 static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
 
+}
+
+static inline int clear(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
+    clear_screen();
 }
 
 static inline int procedure(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {

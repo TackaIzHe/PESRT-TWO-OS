@@ -11,9 +11,8 @@
 extern tty_atr tty;
 
 void init_main_kernel(void) {
-    uint32_t adr = 0x2000 + (64*512);
     read_disk_sectors(1, 64, (void*)(0x2000));
-    read_disk_sectors(64, 200, (void*)(0x10000));
+    // read_disk_sectors(64, 200, (void*)(0x10000)); // будет использоватся при дальнешем расширении
 }
 
 int start_kernel(void) {

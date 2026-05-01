@@ -52,7 +52,7 @@ __attribute__((naked)) void init_video_interapt(void) {
 __attribute__((naked)) void clear_screen_video_interapt(void) {
     for (uint32_t i = 0; i < vbe_mode_info.yres / SYMBOLE_HEIGHT; i++)
         for (uint32_t j = 0; j < vbe_mode_info.xres / SYMBOLE_WIDTH; j++)
-            // p_char(' ', j, i);
+            p_char(' ', j, i);
 
     video.cursor_pos_x = 0;
     video.cursor_pos_y = 0;
@@ -101,7 +101,7 @@ __attribute__((naked)) void print_char_interapt(uint8_t sumbole) {
         video.cursor_pos_x = 0;
     }
     if (video.cursor_pos_y >= vbe_mode_info.yres/ SYMBOLE_HEIGHT) {
-        video.cursor_pos_y = vbe_mode_info.yres/ SYMBOLE_HEIGHT;
+        video.cursor_pos_y = vbe_mode_info.yres/ SYMBOLE_HEIGHT -1;
         scroll_page();
     }
     if (sumbole != ENTER) {
@@ -115,12 +115,14 @@ _exit:
 }
 
 static inline void scroll_page(void) {
-    for (uint32_t i = 0; i < vbe_mode_info.yres; i++)
-        for (uint32_t j = 0; j < vbe_mode_info.xres; j++) {
-            set_pixel(get_pixel(j, i), j+1, i);
+    for (uint32_t k = 0; k < SYMBOLE_HEIGHT; k++) {
+        for (uint32_t i = 1; i < vbe_mode_info.yres; i++) {
+            for (uint32_t j = 0; j < vbe_mode_info.xres; j++) {
+                uint16_t prev_pixel = get_pixel(j, i);
+                set_pixel(prev_pixel, j, i -1);
+            }
         }
-    // for (uint32_t i = 0; i < vbe_mode_info.xres; i++)
-    //     p_char('\0', vbe_mode_info.yres - 1, i);
+    }
 }
 
 static inline void backspace_func(void) {

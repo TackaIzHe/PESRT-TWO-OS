@@ -83,7 +83,7 @@ LINK:
         --only-section=.data \
         --only-section=.bss \
         ${KERNEL_NAME} full_kernel.bin && \
-	cat boot.bin full_kernel.bin null.bin > ${OS_NAME}
+	cat boot.bin full_kernel.bin > ${OS_NAME}
 
 START_QEMU:
 	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},if=ide -m 128M -vga qxl -no-reboot #-s -S #-d int -d cpu

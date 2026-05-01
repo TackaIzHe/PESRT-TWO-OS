@@ -9,6 +9,7 @@
 #define CMD_PROCEDURE 5
 #define CMD_LSPCI     6
 #define CMD_CGPU      7
+#define CMD_CLEAR     8
 #define CMD_EXIT      9
 
 #define CMDSTR_ECHO      "echo"
@@ -19,6 +20,7 @@
 #define CMDSTR_PROCEDURE "procedure"
 #define CMDSTR_LSPCI     "lspci"
 #define CMDSTR_CGPU      "cgpu"
+#define CMDSTR_CLEAR     "clear"
 #define CMDSTR_EXIT      "exit"
 
 #define USER_LINE "<PESRT-TWO-OS>[%s] / "
