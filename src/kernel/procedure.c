@@ -128,6 +128,8 @@ float perlin(float x, float y, uint32_t aa) {
 uint32_t main_procedure(uint32_t patern)
 {
 
+    vbe_mode_info_t vbe_mode_info = {0};
+    get_vbe_mode_info(&vbe_mode_info);
     uint32_t aa = patern;
 
     const int windowWidth = vbe_mode_info.xres;

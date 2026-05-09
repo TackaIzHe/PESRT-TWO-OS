@@ -3,6 +3,7 @@
 
 #include "uint.h"
 #include "tty.h"
+#include "video_driver/vbe.h"
 
 void scan(uint8_t *key);
 void scanf(uint8_t *buff);
@@ -10,6 +11,10 @@ void init_video_mem(void);
 void clear_screen(void);
 void set_cursor_pos(uint32_t x, uint32_t y);
 void set_terminal_tem(uint8_t background, uint8_t text_color);
+void print_pixels_array(const uint16_t *buffer, uint32_t posX, uint32_t posY, uint32_t width, uint32_t height);
+
+void get_vbe_info(vbe_info_t *info);
+void get_vbe_mode_info(vbe_mode_info_t *mode_info);
 
 /**
  * %d Вывод числа

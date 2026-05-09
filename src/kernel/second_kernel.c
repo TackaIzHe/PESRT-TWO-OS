@@ -3,15 +3,12 @@
 #include "stdio.h"
 #include "string.h"
 #include "fs.h"
-
-int ash_main(void);
+#include "ash.h"
 
 void main(void) {
     ash_main();
-    while(1)
-    {
+    while(1) {
         __asm__ __volatile__ ("hlt");
     }
-
     return;
 }

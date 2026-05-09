@@ -9,10 +9,17 @@
 #include "../video_driver/vbe.h"
 #include "../fs.h"
 extern tty_atr tty;
+extern vbe_info_t vbe_info;
+extern vbe_mode_info_t vbe_mode_info;
 
 void init_main_kernel(void) {
-    read_disk_sectors(1, 64, (void*)(0x2000));
-    // read_disk_sectors(64, 200, (void*)(0x10000)); // будет использоватся при дальнешем расширении
+    uint32_t last_sector = 74;
+    read_disk_sectors(1, 80, (void*)(0x200000));
+    memcpy((uint8_t*)(0x2000), (uint8_t*)(0x200000), last_sector*512);
+    /**
+     * Здесь неровное число так как система вылетае если указано больше байт чем есть програма
+     */
+    memcpy((uint8_t*)(0x2000+(last_sector*512)), (uint8_t*)(0x200000+(last_sector*512)), 1*38);
 }
 
 int start_kernel(void) {

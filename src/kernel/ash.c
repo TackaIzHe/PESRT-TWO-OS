@@ -16,6 +16,7 @@ static inline int procedure(const uint8_t *str, uint32_t cnt_str, uint32_t str_l
 static inline int lspci(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 static inline int clear(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
+static inline int snake(const uint8_t *str, uint32_t cnt_str, uint32_t str_len);
 
 int ash_main(void) {
     uint8_t buffer[1024] = {0};
@@ -60,6 +61,9 @@ static inline int convert_str_to_comand(const uint8_t *str) {
     else if (strcmp(arg[0], CMDSTR_CLEAR) == 0) {
         cmd = CMD_CLEAR;
     }
+    else if (strcmp(arg[0], CMDSTR_SNAKE) == 0) {
+        cmd = CMD_SNAKE;
+    }
     else if (strcmp(arg[0], CMDSTR_EXIT) == 0) {
         cmd = CMD_EXIT;
     }
@@ -78,6 +82,7 @@ static inline int comand_list(const uint16_t comand_number, const uint8_t *arg, 
         case CMD_LSPCI:          return lspci(arg, cnt_str, str_len);
         case CMD_CGPU:           return cgpu(arg, cnt_str, str_len);
         case CMD_CLEAR:          return clear(arg, cnt_str, str_len);
+        case CMD_SNAKE:          return snake(arg, cnt_str, str_len);
         case CMD_EXIT:           return CMD_EXIT;
         default:                 return CMD_EXIT;
     }
@@ -87,7 +92,7 @@ static inline int echo(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     printf("echo");
 }
 static inline int cat(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
-    printf("%d \n", vbe_info.version);
+    // printf("%d \n", vbe_info.version);
 }
 static inline int ls(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     printf("ls");
@@ -108,6 +113,10 @@ static inline int cgpu(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
 
 static inline int clear(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
     clear_screen();
+}
+
+static inline int snake(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {
+    snake_main();
 }
 
 static inline int procedure(const uint8_t *str, uint32_t cnt_str, uint32_t str_len) {

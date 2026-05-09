@@ -3,6 +3,7 @@
 #include "interapts/interapt.h"
 #include "string.h"
 #include "tty.h"
+#include "video_driver/vbe.h"
 
 tty_atr tty = {0};
 uint8_t cursor_offset = 0;
@@ -81,6 +82,18 @@ void set_terminal_tem(uint8_t background, uint8_t text_color) {
 
 void print(uint8_t sumbol) {
     __asm__ __volatile__ ("int $0x84");
+}
+
+void print_pixels_array(const uint16_t *buffer, uint32_t posX, uint32_t posY, uint32_t width, uint32_t height) {
+    __asm__ __volatile__ ("int $0x85");
+}
+
+void get_vbe_info(vbe_info_t *info) {
+    __asm__ __volatile__ ("int $0x86");
+}
+
+void get_vbe_mode_info(vbe_mode_info_t *mode_info) {
+    __asm__ __volatile__ ("int $0x87");
 }
 
 void printf(const uint8_t *str, ...) {
