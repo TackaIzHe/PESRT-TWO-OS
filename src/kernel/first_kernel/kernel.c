@@ -8,6 +8,7 @@
 #include "../video_driver/pci.h"
 #include "../video_driver/vbe.h"
 #include "../fs.h"
+
 extern tty_atr tty;
 extern vbe_info_t vbe_info;
 extern vbe_mode_info_t vbe_mode_info;

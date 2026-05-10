@@ -2,6 +2,29 @@
 KERNEL_LOCATION equ 0x2000
 mov [BOOT_DISK], dl                 
 
+xor ax, ax                          
+mov es, ax
+mov ds, ax
+mov bp, 0x8000
+mov sp, bp
+
+mov bx, KERNEL_LOCATION
+mov dh, 2
+
+; Обнаружелось ограничение QEMU на чтение секторов диска == 0x2E
+; Читает от 2 до 46 включительно
+mov ah, 0x02
+mov al, 46
+mov ch, 0x00
+mov dh, 0x00
+mov cl, 0x02
+mov dl, [BOOT_DISK]
+int 0x13
+
+mov ah, 0x1
+mov ch, 0x5f
+int 10h
+
 ; Получение даных vbe vbe_mode_info_t
 mov ax, 0x1000
 mov di, ax
@@ -25,28 +48,9 @@ mov cx, 0x411A
 mov bx, 0x411A
 int 0x10
 
-xor ax, ax                          
-mov es, ax
-mov ds, ax
-mov bp, 0x8000
-mov sp, bp
-
-mov bx, KERNEL_LOCATION
-mov dh, 2
-
-; Обнаружелось ограничение QEMU на чтение секторов диска == 0x2E
-; Читает от 2 до 46 включительно
-mov ah, 0x02
-mov al, 30
-mov ch, 0x00
-mov dh, 0x00
-mov cl, 0x02
-mov dl, [BOOT_DISK]
-int 0x13
-
-mov ah, 0x1
-mov ch, 0x5f
-int 10h
+mov al, 'A'
+mov ah, 0x0E
+int 0x10
 
 CODE_SEG equ GDT_code - GDT_start
 DATA_SEG equ GDT_data - GDT_start
@@ -102,6 +106,29 @@ start_protected_mode:
 	mov ebp, 0x90000		; 32 bit stack base pointer
 	mov esp, ebp
     jmp KERNEL_LOCATION
- 
-times 510-($-$$) db 0            
+
+; --- Таблица разделов (64 байта) ---
+; Первая запись: активный раздел FAT32 (LBA), начиная с 2048, весь диск
+
+times 446-($-$$) db 0            
+
+partition1:
+    db 0x80               ; активный
+    db 0x00, 0x01, 0x00   ; CHS (не используется, но должен быть валиден)
+    db 0x0C               ; тип: FAT32 (LBA)
+    db 0xFF, 0xFF, 0xFF   ; CHS конец
+    dd 2048               ; LBA начала — **важно!**
+    dd 2048*32   ;1мегобайт  ; количество секторов
+
+; Остальные три записи — пустые
+partition2: times 16 db 0
+partition3: times 16 db 0
+partition4: times 16 db 0
+
 dw 0xaa55
+
+; --- Дополнительные данные (если нужно) ---
+; times 512*2048 - ($-$$) db 0  ; если нужно "заполнить" до сектора 2048 (опционально)
+
+; times 512 db 0  ; паддинг до 1MB, если вы пишете на флешку
+

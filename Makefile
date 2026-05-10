@@ -1,5 +1,7 @@
 KERNEL_NAME      := full_kernel.elf
 OS_NAME          := PESRT-TWO-OS.bin
+offset           := 1048576
+# LOOPDEV          := $(shell sudo losetup -f --show --offset $(offset) ./bin/iso.img)
 
 QEMU_FLAGS       := -serial stdio -d in_asm,cpu,int,guest_errors,unimp -no-reboot -no-shutdown
 
@@ -42,6 +44,8 @@ all:
 	make KERNEL
 	@echo -e '\033[0;93m !!! Link kernel !!! \033[0m'
 	make LINK
+	@echo -e '\033[0;93m !!! Create IMG !!! \033[0m'
+	make write_flash
 
 debug:
 	make all KERNEL_CO_FLAG="${KERNEL_CO_FLAG} -g -O0"
@@ -83,10 +87,20 @@ LINK:
         --only-section=.data \
         --only-section=.bss \
         ${KERNEL_NAME} full_kernel.bin && \
-	cat boot.bin full_kernel.bin null.bin > ${OS_NAME}
+	cat boot.bin full_kernel.bin > ${OS_NAME}
+
+	# Нужно написать скрипт создания загрузочного образа
+# Смещение в 1мегобайт (супер блок первого раздела)
+
+write_flash:
+	touch bin/iso.img
+	sudo dd if=/dev/zero of=bin/iso.img bs=512 count=65536
+	sudo mkfs.fat -F 32 bin/iso.img
+	sudo dd if=bin/PESRT-TWO-OS.bin of=bin/iso.img bs=512
 
 START_QEMU:
-	qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},if=ide -m 128M -vga qxl -no-reboot #-s -S #-d int -d cpu
+	qemu-system-i386 -drive format=raw,file=bin/iso.img,if=ide -m 128M -vga qxl -no-reboot -s -S
+	# qemu-system-i386 -drive format=raw,file=${BIN_DIR}/${OS_NAME},if=ide -m 128M -vga qxl -no-reboot #-s -S #-d int -d cpu
 
 mkdir:
 	@echo -e '\033[0;93m !!! Make directory !!! \033[0m'
