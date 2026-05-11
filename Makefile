@@ -27,7 +27,7 @@ KERNEL_IDT       := pic.o idt.o io.o
 KERNEL_GDT       := gdt.o tss.o
 KERNEL_ASH       := ash.o procedure.o snake_game.o
 KERNEL_PCI       := pci.o visual_mode.o vbe.o symbole.o
-KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} ${KERNEL_INT} ${KERNEL_ASM_FILES} string.o stdio.o fs.o second_kernel.o ${KERNEL_ASH} ${KERNEL_PCI}
+KERNEL_FILES     := ${KERNEL_GDT} ${KERNEL_IDT} ${KERNEL_INT} ${KERNEL_ASM_FILES} string.o stdio.o math.o fs.o second_kernel.o ${KERNEL_ASH} ${KERNEL_PCI}
 
 .PHONY: all debug ASM KERNEL LINK START_QEMU mkdir clean_obj clean
 

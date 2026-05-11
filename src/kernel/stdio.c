@@ -5,7 +5,6 @@
 #include "tty.h"
 #include "video_driver/vbe.h"
 
-tty_atr tty = {0};
 uint8_t cursor_offset = 0;
 
 static inline uint8_t sumbole_down_convert(uint8_t sumb);
@@ -38,6 +37,8 @@ void scanf(uint8_t *buff) {
 
 void scan(uint8_t *key) {
     *key = '\0';
+    tty_atr tty = {0};
+    get_tty(&tty);
     __asm__ __volatile__ ("int $0x21");
     while (*key == '\0') {
         __asm__ __volatile__ ("hlt");
@@ -48,7 +49,7 @@ void scan(uint8_t *key) {
             *key = '\0';
             goto _exit;
         }
-        tty.keyboard_state = KEYBOARD_STATE_UP;
+        set_keyboard_state(KEYBOARD_STATE_UP);
     }
     else {
         if (tty.keyboard_state == KEYBOARD_STATE_DOWN && tty.last_dep_key == *key) {
@@ -56,13 +57,45 @@ void scan(uint8_t *key) {
             *key = '\0';
             goto _exit;
         }
-        tty.keyboard_state = KEYBOARD_STATE_DOWN;
+        set_keyboard_state(KEYBOARD_STATE_DOWN);
     }
 _ret_key:
     // tty.last_dep_count = 0;
-    tty.last_dep_key = *key;
+    set_last_dep_key(*key);
     *key = sumbole_down_convert(*key);
 _exit:
+}
+
+void set_periodic_func(void(*func)(void*), void *arg) {
+    __asm__ __volatile__ ("int $0x70");
+}
+
+void del_periodic_func(void) {
+    __asm__ __volatile__ ("int $0x71");
+}
+
+void check_periodic_func(void(*func)(void*), uint8_t *res) {
+    __asm__ __volatile__ ("int $0x72");
+}
+
+void get_tic(uint16_t *tic) {
+    __asm__ __volatile__ ("int $0x73");
+}
+
+void get_tty(tty_atr *tty) {
+    __asm__ __volatile__ ("int $0x74");
+}
+
+void set_keyboard_state(uint8_t keybord_state) {
+    __asm__ __volatile__ ("int $0x75");
+}
+
+void set_last_dep_key(uint8_t last_dep_key) {
+    __asm__ __volatile__ ("int $0x76");
+}
+
+void set_cyrsor_symboles(uint8_t *symboles) {
+    __asm__ __volatile__ ("int $0x77");
 }
 
 void init_video_mem(void) {
@@ -218,6 +251,10 @@ void convert_int_to_string(uint32_t num, uint8_t *buff) {
     }
     buff[len] = '\0';
 _exit:
+}
+
+void sleep(uint32_t count) {
+
 }
 
 uint32_t convert_string_to_int(uint8_t *string) {

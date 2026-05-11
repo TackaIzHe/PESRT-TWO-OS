@@ -16,6 +16,16 @@ void print_pixels_array(const uint16_t *buffer, uint32_t posX, uint32_t posY, ui
 void get_vbe_info(vbe_info_t *info);
 void get_vbe_mode_info(vbe_mode_info_t *mode_info);
 
+void set_periodic_func(void(*func)(void*), void *arg);
+void del_periodic_func(void);
+void check_periodic_func(void(*func)(void*), uint8_t *res);
+void get_tic(uint16_t *tic);
+
+void get_tty(tty_atr *tty);
+void set_keyboard_state(uint8_t keybord_state);
+void set_last_dep_key(uint8_t last_dep_key);
+void set_cyrsor_symboles(uint8_t *symboles);
+
 /**
  * %d Вывод числа
  * %c Вывод символа

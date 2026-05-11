@@ -27,6 +27,30 @@ void init_idt(void) {
     idt_set_gate(0x21, (uint32_t)keybord_interapt,
     0x08, 0x8E | 0x60);  // 0x60 - DPL=3 (разрешить из кольца 3)
 
+    idt_set_gate(0x70, (uint32_t)set_timer_periodic_func_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x71, (uint32_t)del_timer_periodic_func_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x72, (uint32_t)check_func_periodic_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x73, (uint32_t)get_cur_tic_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+    
+    idt_set_gate(0x74, (uint32_t)get_tty_atr_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x75, (uint32_t)set_tty_keyboard_state_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x76, (uint32_t)set_tty_last_dep_key_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
+    idt_set_gate(0x77, (uint32_t)set_tty_cursor_symboles_interapt,
+    0x08, 0x8E | 0x60);  // 0x6
+
     idt_set_gate(0x80, (uint32_t)init_video_interapt,
     0x08, 0x8E | 0x60);  // 0x6
 
